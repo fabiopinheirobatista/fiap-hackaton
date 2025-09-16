@@ -1,8 +1,8 @@
 package br.com.fiap.jackaton.enums;
 
-public enum AppointmentStatus {
+public enum StatusAgendamento {
     AGENDADA,
     CONFIRMADA,
-    CANCELADA
+    CANCELADA,
+    REAGENDADA
 }
-

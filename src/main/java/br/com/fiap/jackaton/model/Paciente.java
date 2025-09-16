@@ -2,12 +2,12 @@ package br.com.fiap.jackaton.model;
 
 import java.util.Objects;
 
-public class Patient {
+public class Paciente {
     private final String id;
     private final String name;
     private final boolean active;
 
-    public Patient(String id, String name, boolean active) {
+    public Paciente(String id, String name, boolean active) {
         this.id = id;
         this.name = name;
         this.active = active;
@@ -29,8 +29,8 @@ public class Patient {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Patient patient = (Patient) o;
-        return Objects.equals(id, patient.id);
+        Paciente paciente = (Paciente) o;
+        return Objects.equals(id, paciente.id);
     }
 
     @Override
