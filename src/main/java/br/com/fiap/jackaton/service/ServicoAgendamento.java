@@ -1,6 +1,8 @@
 package br.com.fiap.jackaton.service;
 
 import br.com.fiap.jackaton.dto.AgendamentoRequisicao;
+import br.com.fiap.jackaton.dto.RecusaRequisicao;
+import br.com.fiap.jackaton.dto.RecusaResposta;
 import br.com.fiap.jackaton.dto.SugestaoResposta;
 import br.com.fiap.jackaton.dto.TriagemDTO;
 import br.com.fiap.jackaton.entity.*;
@@ -18,6 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ServicoAgendamento {
@@ -321,6 +324,52 @@ public class ServicoAgendamento {
         UnidadeComHorario(UnidadeEntity unidade, HorarioDisponivelEntity horario) {
             this.unidade = unidade;
             this.horario = horario;
+        }
+    }
+
+    public RecusaResposta registrarRecusa(RecusaRequisicao requisicao) {
+        // valida paciente
+        buscarPacienteAtivo(requisicao.getPacienteId());
+
+        TipoAgendamento tipo = requisicao.getTipo();
+        String localizacao = requisicao.getLocalizacao();
+        int urgencia = normalizarUrgencia(requisicao.getUrgencia());
+
+        List<UnidadeEntity> unidades = buscarUnidadesDisponiveis(tipo, localizacao);
+
+        Optional<SugestaoResposta> proxima = unidades.stream()
+                .flatMap(unidade -> {
+                    List<HorarioDisponivelEntity> horariosFiltrados = unidade.getHorariosDisponiveis().stream()
+                            .filter(h -> !(
+                                    unidade.getId().equals(requisicao.getUnidadeId())
+                                    && h.getDataHora().equals(requisicao.getDataHora())
+                                    && ((requisicao.getProfissionalId() == null && h.getIdProfissional() == null)
+                                        || (requisicao.getProfissionalId() != null && requisicao.getProfissionalId().equals(h.getIdProfissional())))
+                            ))
+                            .collect(Collectors.toList());
+
+                    Optional<HorarioDisponivelEntity> melhorHorario = horariosFiltrados.stream()
+                            .min(Comparator.comparing(HorarioDisponivelEntity::getDataHora));
+
+                    return melhorHorario.map(horario -> new UnidadeComHorario(unidade, horario)).stream();
+                })
+                .min(Comparator.comparingDouble(uh -> calcularPontuacao(
+                        uh.horario.getDataHora(),
+                        localizacao,
+                        uh.unidade.getLocalizacao(),
+                        urgencia
+                )))
+                .map(uh -> new SugestaoResposta(
+                        uh.unidade.getId(),
+                        uh.unidade.getNome(),
+                        uh.horario.getDataHora(),
+                        uh.horario.getIdProfissional()
+                ));
+
+        if (proxima.isPresent()) {
+            return new RecusaResposta("Sugestão recusada. Próxima sugestão gerada.", proxima.get());
+        } else {
+            return new RecusaResposta("Sugestão recusada. Nenhuma alternativa disponível no momento.", null);
         }
     }
 }
