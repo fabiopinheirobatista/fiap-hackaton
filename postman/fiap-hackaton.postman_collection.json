@@ -1,0 +1,70 @@
+{
+  "info": {
+    "_postman_id": "f0a1b2c3-d4e5-6789-abcd-ef0123456789",
+    "name": "FIAP Hackaton - Appointments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Suggest Appointment - valid",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patientId\": \"p1\",\n  \"type\": \"CLINICO_GERAL\",\n  \"symptoms\": \"dor de cabeça\",\n  \"location\": \"Centro\",\n  \"urgency\": 3\n}"
+        },
+        "url": { "raw": "http://localhost:8080/api/appointments/suggest", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","appointments","suggest"] }
+      },
+      "response": []
+    },
+    {
+      "name": "Suggest Appointment - missing patientId (validation)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"type\": \"CLINICO_GERAL\",\n  \"location\": \"Centro\",\n  \"urgency\": 2\n}" },
+        "url": { "raw": "http://localhost:8080/api/appointments/suggest", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","appointments","suggest"] }
+      }
+    },
+    {
+      "name": "Confirm Appointment - valid",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"patientId\": \"p1\",\n  \"unitId\": \"u1\",\n  \"dateTime\": \"2025-09-17T09:00:00\",\n  \"professionalId\": \"prof1\",\n  \"type\": \"CLINICO_GERAL\"\n}" },
+        "url": { "raw": "http://localhost:8080/api/appointments/confirm", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","appointments","confirm"] }
+      }
+    },
+    {
+      "name": "Confirm Appointment - conflict (same slot)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"patientId\": \"p2\",\n  \"unitId\": \"u1\",\n  \"dateTime\": \"2025-09-17T09:00:00\",\n  \"professionalId\": \"prof1\",\n  \"type\": \"CLINICO_GERAL\"\n}" },
+        "url": { "raw": "http://localhost:8080/api/appointments/confirm", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","appointments","confirm"] }
+      }
+    },
+    {
+      "name": "Admin Reset - reset data",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" }
+        ],
+        "url": { "raw": "http://localhost:8080/admin/reset", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","reset"] }
+      }
+    },
+    {
+      "name": "Admin Flyway History",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" } ],
+        "url": { "raw": "http://localhost:8080/admin/flyway/history", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","flyway","history"] }
+      }
+    }
+  ]
+}
