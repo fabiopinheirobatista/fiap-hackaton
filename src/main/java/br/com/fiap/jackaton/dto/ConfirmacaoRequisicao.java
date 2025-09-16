@@ -3,20 +3,24 @@ package br.com.fiap.jackaton.dto;
 import br.com.fiap.jackaton.enums.TipoAgendamento;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
 public class ConfirmacaoRequisicao {
     @NotBlank(message = "pacienteId é obrigatório")
+    @Size(max = 50, message = "pacienteId deve ter no máximo 50 caracteres")
     private String pacienteId;
 
     @NotBlank(message = "unidadeId é obrigatório")
+    @Size(max = 50, message = "unidadeId deve ter no máximo 50 caracteres")
     private String unidadeId;
 
     @NotNull(message = "dataHora é obrigatório")
     private LocalDateTime dataHora;
 
     @NotBlank(message = "profissionalId é obrigatório")
+    @Size(max = 50, message = "profissionalId deve ter no máximo 50 caracteres")
     private String profissionalId;
 
     @NotNull(message = "tipo é obrigatório")

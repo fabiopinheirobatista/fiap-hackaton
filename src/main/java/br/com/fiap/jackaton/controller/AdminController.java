@@ -28,7 +28,7 @@ public class AdminController {
         try {
             return jdbcTemplate.queryForList("SELECT installed_rank, version, description, type, installed_by, installed_on FROM flyway_schema_history ORDER BY installed_rank");
         } catch (Exception e) {
-            return List.of(Map.of("error", "could not read flyway_schema_history: " + e.getMessage()));
+            return List.of(Map.of("error", "Não foi possível ler flyway_schema_history: " + e.getMessage()));
         }
     }
 
