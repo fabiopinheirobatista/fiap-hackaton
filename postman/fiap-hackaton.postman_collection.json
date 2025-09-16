@@ -25,6 +25,22 @@
           "response": []
         },
         {
+          "name": "Recusar Sugestão - Solicitar Próxima",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T09:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3,\n  \"motivoRecusa\": \"Horário inconveniente\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/recusar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","recusar"] }
+          },
+          "response": []
+        },
+        {
           "name": "Sugerir Agendamento - pacienteId ausente (Validação)",
           "request": {
             "method": "POST",
