@@ -1,70 +1,186 @@
 {
   "info": {
     "_postman_id": "f0a1b2c3-d4e5-6789-abcd-ef0123456789",
-    "name": "FIAP Hackaton - Appointments",
+    "name": "FIAP Hackaton - Agendamentos (PT-BR)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Suggest Appointment - valid",
-      "request": {
-        "method": "POST",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"patientId\": \"p1\",\n  \"type\": \"CLINICO_GERAL\",\n  \"symptoms\": \"dor de cabeça\",\n  \"location\": \"Centro\",\n  \"urgency\": 3\n}"
+      "name": "Agendamentos Básicos",
+      "item": [
+        {
+          "name": "Sugerir Agendamento - Válido",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"dor de cabeça\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          },
+          "response": []
         },
-        "url": { "raw": "http://localhost:8080/api/appointments/suggest", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","appointments","suggest"] }
-      },
-      "response": []
+        {
+          "name": "Sugerir Agendamento - pacienteId ausente (Validação)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"tipo\": \"CLINICO_GERAL\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 2\n}" },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Confirmar Agendamento - Válido",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T09:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}" },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          }
+        },
+        {
+          "name": "Confirmar Agendamento - Conflito (Mesmo Horário)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"pacienteId\": \"p2\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T09:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}" },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          }
+        }
+      ]
     },
     {
-      "name": "Suggest Appointment - missing patientId (validation)",
-      "request": {
-        "method": "POST",
-        "header": [ { "key": "Content-Type", "value": "application/json" } ],
-        "body": { "mode": "raw", "raw": "{\n  \"type\": \"CLINICO_GERAL\",\n  \"location\": \"Centro\",\n  \"urgency\": 2\n}" },
-        "url": { "raw": "http://localhost:8080/api/appointments/suggest", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","appointments","suggest"] }
-      }
+      "name": "Exames com Triagem",
+      "item": [
+        {
+          "name": "Sugerir Exame com Triagem - Urgente",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requisicao\": {\n    \"pacienteId\": \"p1\",\n    \"tipo\": \"EXAME_SANGUE\",\n    \"sintomas\": \"sangramento intenso\",\n    \"localizacao\": \"Centro\",\n    \"urgencia\": 5\n  },\n  \"triagem\": {\n    \"pacienteId\": \"p1\",\n    \"sintomas\": \"sangramento intenso\",\n    \"urgencia\": 5,\n    \"motivo\": \"urgente\"\n  }\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir-com-triagem", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir-com-triagem"] }
+          }
+        },
+        {
+          "name": "Sugerir Exame Pré-Operatório",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requisicao\": {\n    \"pacienteId\": \"p2\",\n    \"tipo\": \"EXAME_SANGUE\",\n    \"sintomas\": \"pré-operatório cirurgia cardíaca\",\n    \"localizacao\": \"Zona Sul\",\n    \"urgencia\": 4\n  },\n  \"triagem\": {\n    \"pacienteId\": \"p2\",\n    \"sintomas\": \"pré-operatório cirurgia cardíaca\",\n    \"urgencia\": 4,\n    \"motivo\": \"pré-operatório\"\n  }\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir-com-triagem", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir-com-triagem"] }
+          }
+        },
+        {
+          "name": "Confirmar Exame com Triagem",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "pacienteId", "value": "p1", "type": "text" },
+                { "key": "unidadeId", "value": "u1", "type": "text" },
+                { "key": "dataHora", "value": "2025-09-17T10:00:00", "type": "text" },
+                { "key": "profissionalId", "value": "prof1", "type": "text" },
+                { "key": "tipo", "value": "EXAME_SANGUE", "type": "text" },
+                { "key": "triagemId", "value": "t1", "type": "text" }
+              ]
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar-com-triagem", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar-com-triagem"] }
+          }
+        },
+        {
+          "name": "Reagendar Exame",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "agendamentoId", "value": "a1", "type": "text" },
+                { "key": "novaUnidadeId", "value": "u1", "type": "text" },
+                { "key": "novaDataHora", "value": "2025-09-18T11:00:00", "type": "text" },
+                { "key": "novoProfissionalId", "value": "prof1", "type": "text" }
+              ]
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/reagendar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","reagendar"] }
+          }
+        },
+        {
+          "name": "Validação - Sugestão com Dados Inválidos",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requisicao\": {\n    \"tipo\": \"EXAME_SANGUE\",\n    \"localizacao\": \"Centro\"\n  },\n  \"triagem\": {\n    \"motivo\": \"urgente\"\n  }\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir-com-triagem", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir-com-triagem"] }
+          }
+        }
+      ]
     },
     {
-      "name": "Confirm Appointment - valid",
-      "request": {
-        "method": "POST",
-        "header": [ { "key": "Content-Type", "value": "application/json" } ],
-        "body": { "mode": "raw", "raw": "{\n  \"patientId\": \"p1\",\n  \"unitId\": \"u1\",\n  \"dateTime\": \"2025-09-17T09:00:00\",\n  \"professionalId\": \"prof1\",\n  \"type\": \"CLINICO_GERAL\"\n}" },
-        "url": { "raw": "http://localhost:8080/api/appointments/confirm", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","appointments","confirm"] }
-      }
-    },
-    {
-      "name": "Confirm Appointment - conflict (same slot)",
-      "request": {
-        "method": "POST",
-        "header": [ { "key": "Content-Type", "value": "application/json" } ],
-        "body": { "mode": "raw", "raw": "{\n  \"patientId\": \"p2\",\n  \"unitId\": \"u1\",\n  \"dateTime\": \"2025-09-17T09:00:00\",\n  \"professionalId\": \"prof1\",\n  \"type\": \"CLINICO_GERAL\"\n}" },
-        "url": { "raw": "http://localhost:8080/api/appointments/confirm", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","appointments","confirm"] }
-      }
-    },
-    {
-      "name": "Admin Reset - reset data",
-      "request": {
-        "method": "POST",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" }
-        ],
-        "url": { "raw": "http://localhost:8080/admin/reset", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","reset"] }
-      }
-    },
-    {
-      "name": "Admin Flyway History",
-      "request": {
-        "method": "GET",
-        "header": [ { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" } ],
-        "url": { "raw": "http://localhost:8080/admin/flyway/history", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","flyway","history"] }
-      }
+      "name": "Administração",
+      "item": [
+        {
+          "name": "Admin - Resetar Dados",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/admin/reset", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","reset"] }
+          }
+        },
+        {
+          "name": "Admin - Histórico de Migrações (Flyway)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/admin/flyway/history", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","flyway","history"] }
+          }
+        }
+      ]
     }
   ]
 }

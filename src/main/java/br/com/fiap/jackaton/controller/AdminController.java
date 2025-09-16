@@ -1,6 +1,7 @@
 package br.com.fiap.jackaton.controller;
 
-import br.com.fiap.jackaton.service.DataSetupService;
+import br.com.fiap.jackaton.service.ConfiguracaoDadosService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,11 +16,11 @@ import java.util.Map;
 public class AdminController {
 
     private final JdbcTemplate jdbcTemplate;
-    private final DataSetupService dataSetupService;
+    private final ConfiguracaoDadosService configuracaoDadosService;
 
-    public AdminController(JdbcTemplate jdbcTemplate, DataSetupService dataSetupService) {
+    public AdminController(JdbcTemplate jdbcTemplate, ConfiguracaoDadosService configuracaoDadosService) {
         this.jdbcTemplate = jdbcTemplate;
-        this.dataSetupService = dataSetupService;
+        this.configuracaoDadosService = configuracaoDadosService;
     }
 
     @GetMapping("/flyway/history")
@@ -32,12 +33,8 @@ public class AdminController {
     }
 
     @PostMapping("/reset")
-    public Map<String, Object> resetData() {
-        try {
-            dataSetupService.resetData();
-            return Map.of("status", "ok");
-        } catch (Exception e) {
-            return Map.of("error", e.getMessage());
-        }
+    public ResponseEntity<Void> reiniciarDados() {
+        configuracaoDadosService.reiniciarDados();
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,6 +1,6 @@
 package br.com.fiap.jackaton.config;
 
-import br.com.fiap.jackaton.service.DataSetupService;
+import br.com.fiap.jackaton.service.ConfiguracaoDadosService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -8,14 +8,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataInitializer implements ApplicationRunner {
 
-    private final DataSetupService dataSetupService;
+    private final ConfiguracaoDadosService configuracaoDadosService;
 
-    public DataInitializer(DataSetupService dataSetupService) {
-        this.dataSetupService = dataSetupService;
+    public DataInitializer(ConfiguracaoDadosService configuracaoDadosService) {
+        this.configuracaoDadosService = configuracaoDadosService;
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        dataSetupService.resetData();
+    public void run(ApplicationArguments args) {
+        configuracaoDadosService.reiniciarDados();
     }
 }
