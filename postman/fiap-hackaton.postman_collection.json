@@ -6,6 +6,107 @@
   },
   "item": [
     {
+      "name": "História 3 - Visualizar Agenda por Unidade e Especialidade",
+      "item": [
+        {
+          "name": "Visualizar Agenda - Clínico Geral",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeId\": \"u1\",\n  \"data\": \"2025-09-17\",\n  \"especialidade\": \"CLINICO_GERAL\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agenda/visualizar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agenda","visualizar"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Visualizar Agenda - Exame de Sangue",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeId\": \"u2\",\n  \"data\": \"2025-09-17\",\n  \"especialidade\": \"EXAME_SANGUE\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agenda/visualizar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agenda","visualizar"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Bloqueio - Profissional de Férias",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T09:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"motivo\": \"Profissional de férias\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agenda/bloquear", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agenda","bloquear"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Bloqueio - Horário Reservado",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T14:00:00\",\n  \"motivo\": \"Horário reservado para emergências\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agenda/bloquear", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agenda","bloquear"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Visualizar Agenda - Validação Unidade Inexistente",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeId\": \"unidade_inexistente\",\n  \"data\": \"2025-09-17\",\n  \"especialidade\": \"CLINICO_GERAL\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agenda/visualizar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agenda","visualizar"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Visualizar Agenda - Validação Dados Obrigatórios",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"2025-09-17\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agenda/visualizar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agenda","visualizar"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Agendamentos Básicos",
       "item": [
         {

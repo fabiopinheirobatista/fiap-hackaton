@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface AgendamentoRepository extends JpaRepository<AgendamentoEntity, String> {
@@ -19,4 +20,9 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoEntity, 
         @Param("dataHora") LocalDateTime dataHora,
         @Param("status") StatusAgendamento status
     );
+
+    @Query("SELECT a FROM AgendamentoEntity a WHERE a.unidadeId = :unidadeId AND a.dataHora >= :inicio AND a.dataHora < :fim")
+    List<AgendamentoEntity> findByUnidadeIdAndDataHoraBetween(@Param("unidadeId") String unidadeId,
+                                                               @Param("inicio") LocalDateTime inicio,
+                                                               @Param("fim") LocalDateTime fim);
 }
