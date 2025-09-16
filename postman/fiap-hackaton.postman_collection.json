@@ -2,14 +2,205 @@
   "info": {
     "_postman_id": "f0a1b2c3-d4e5-6789-abcd-ef0123456789",
     "name": "FIAP Hackaton - Agendamentos (PT-BR)",
+    "description": "Coleção de requisições para teste da API de agendamento de consultas médicas.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
+    {
+      "name": "Configuração Inicial",
+      "item": [
+        {
+          "name": "Admin - Resetar Dados",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/admin/reset", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","reset"] }
+          }
+        }
+      ],
+      "description": "Requisições para configurar o ambiente de testes"
+    },
+    {
+      "name": "História 1 e 2 - Agendamentos Básicos",
+      "item": [
+        {
+          "name": "Sugerir Agendamento - Válido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"unidade_id\", jsonData.unidadeId);",
+                  "pm.collectionVariables.set(\"profissional_id\", jsonData.profissionalId);",
+                  "pm.collectionVariables.set(\"data_hora\", jsonData.dataHora);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"dor de cabeça\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Recusar Sugestão - Solicitar Próxima",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"{{unidade_id}}\",\n  \"dataHora\": \"{{data_hora}}\",\n  \"profissionalId\": \"{{profissional_id}}\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3,\n  \"motivoRecusa\": \"Horário inconveniente\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/recusar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","recusar"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Sugerir Agendamento - pacienteId ausente (Validação)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"tipo\": \"CLINICO_GERAL\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 2\n}" },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Confirmar Agendamento - Válido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"agendamento_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T09:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}" },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          }
+        },
+        {
+          "name": "Confirmar Agendamento - Conflito (Mesmo Horário)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"pacienteId\": \"p2\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T09:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}" },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          }
+        }
+      ]
+    },
     {
       "name": "História 3 - Visualizar Agenda por Unidade e Especialidade",
       "item": [
         {
           "name": "Visualizar Agenda - Clínico Geral",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -26,6 +217,19 @@
         },
         {
           "name": "Visualizar Agenda - Exame de Sangue",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -42,6 +246,19 @@
         },
         {
           "name": "Criar Bloqueio - Profissional de Férias",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -58,6 +275,19 @@
         },
         {
           "name": "Criar Bloqueio - Horário Reservado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -74,6 +304,19 @@
         },
         {
           "name": "Visualizar Agenda - Validação Unidade Inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -90,6 +333,19 @@
         },
         {
           "name": "Visualizar Agenda - Validação Dados Obrigatórios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -107,83 +363,28 @@
       ]
     },
     {
-      "name": "Agendamentos Básicos",
-      "item": [
-        {
-          "name": "Sugerir Agendamento - Válido",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept-Language", "value": "pt-BR" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"dor de cabeça\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3\n}"
-            },
-            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Recusar Sugestão - Solicitar Próxima",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept-Language", "value": "pt-BR" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T09:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3,\n  \"motivoRecusa\": \"Horário inconveniente\"\n}"
-            },
-            "url": { "raw": "http://localhost:8080/api/agendamentos/recusar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","recusar"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Sugerir Agendamento - pacienteId ausente (Validação)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept-Language", "value": "pt-BR" }
-            ],
-            "body": { "mode": "raw", "raw": "{\n  \"tipo\": \"CLINICO_GERAL\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 2\n}" },
-            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
-          }
-        },
-        {
-          "name": "Confirmar Agendamento - Válido",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept-Language", "value": "pt-BR" }
-            ],
-            "body": { "mode": "raw", "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T09:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}" },
-            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
-          }
-        },
-        {
-          "name": "Confirmar Agendamento - Conflito (Mesmo Horário)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept-Language", "value": "pt-BR" }
-            ],
-            "body": { "mode": "raw", "raw": "{\n  \"pacienteId\": \"p2\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T09:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}" },
-            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
-          }
-        }
-      ]
-    },
-    {
       "name": "Exames com Triagem",
       "item": [
         {
           "name": "Sugerir Exame com Triagem - Urgente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"exame_unidade_id\", jsonData.unidadeId);",
+                  "pm.collectionVariables.set(\"exame_profissional_id\", jsonData.profissionalId);",
+                  "pm.collectionVariables.set(\"exame_data_hora\", jsonData.dataHora);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -199,6 +400,19 @@
         },
         {
           "name": "Sugerir Exame Pré-Operatório",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -214,6 +428,32 @@
         },
         {
           "name": "Confirmar Exame com Triagem",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"exame_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Criar uma nova triagem para testes",
+                  "pm.collectionVariables.set(\"triagem_id\", \"t1\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -224,11 +464,11 @@
               "mode": "formdata",
               "formdata": [
                 { "key": "pacienteId", "value": "p1", "type": "text" },
-                { "key": "unidadeId", "value": "u1", "type": "text" },
-                { "key": "dataHora", "value": "2025-09-17T10:00:00", "type": "text" },
-                { "key": "profissionalId", "value": "prof1", "type": "text" },
+                { "key": "unidadeId", "value": "{{exame_unidade_id}}", "type": "text" },
+                { "key": "dataHora", "value": "{{exame_data_hora}}", "type": "text" },
+                { "key": "profissionalId", "value": "{{exame_profissional_id}}", "type": "text" },
                 { "key": "tipo", "value": "EXAME_SANGUE", "type": "text" },
-                { "key": "triagemId", "value": "t1", "type": "text" }
+                { "key": "triagemId", "value": "{{triagem_id}}", "type": "text" }
               ]
             },
             "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar-com-triagem", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar-com-triagem"] }
@@ -236,6 +476,19 @@
         },
         {
           "name": "Reagendar Exame",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -245,7 +498,7 @@
             "body": {
               "mode": "formdata",
               "formdata": [
-                { "key": "agendamentoId", "value": "a1", "type": "text" },
+                { "key": "agendamentoId", "value": "{{exame_id}}", "type": "text" },
                 { "key": "novaUnidadeId", "value": "u1", "type": "text" },
                 { "key": "novaDataHora", "value": "2025-09-18T11:00:00", "type": "text" },
                 { "key": "novoProfissionalId", "value": "prof1", "type": "text" }
@@ -256,6 +509,19 @@
         },
         {
           "name": "Validação - Sugestão com Dados Inválidos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -272,38 +538,23 @@
       ]
     },
     {
-      "name": "Administração",
-      "item": [
-        {
-          "name": "Admin - Resetar Dados",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" },
-              { "key": "Accept-Language", "value": "pt-BR" }
-            ],
-            "url": { "raw": "http://localhost:8080/admin/reset", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","reset"] }
-          }
-        },
-        {
-          "name": "Admin - Histórico de Migrações (Flyway)",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" },
-              { "key": "Accept-Language", "value": "pt-BR" }
-            ],
-            "url": { "raw": "http://localhost:8080/admin/flyway/history", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","flyway","history"] }
-          }
-        }
-      ]
-    },
-    {
       "name": "História 4 - Verificar Consulta Agendada",
       "item": [
         {
           "name": "Buscar Consultas Ativas do Paciente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -316,6 +567,19 @@
         },
         {
           "name": "Buscar Histórico de Consultas do Paciente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -328,6 +592,19 @@
         },
         {
           "name": "Buscar Todas Consultas do Paciente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -340,6 +617,19 @@
         },
         {
           "name": "Buscar Consultas - Paciente 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -357,6 +647,22 @@
       "item": [
         {
           "name": "Confirmar Agendamento para Cancelamento",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"agendamento_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -372,7 +678,70 @@
           "response": []
         },
         {
+          "name": "Confirmar Agendamento Próximo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"agendamento_id_proximo\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Criar uma data próxima (menos de 24h no futuro)",
+                  "var dataProxima = new Date();",
+                  "dataProxima.setHours(dataProxima.getHours() + 12);",
+                  "var dataProximaFormatada = dataProxima.toISOString().slice(0, 19);",
+                  "pm.collectionVariables.set(\"data_proxima\", dataProximaFormatada);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"{{data_proxima}}\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          },
+          "response": []
+        },
+        {
           "name": "Cancelar Consulta - Cancelamento Válido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Verifica status CANCELADA\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql(\"CANCELADA\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -389,6 +758,19 @@
         },
         {
           "name": "Cancelar Consulta - Agendamento Inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -405,6 +787,19 @@
         },
         {
           "name": "Cancelar Consulta - Paciente Incorreto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -421,6 +816,19 @@
         },
         {
           "name": "Cancelar Consulta - Prazo Expirado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -436,23 +844,20 @@
           "response": []
         },
         {
-          "name": "Confirmar Agendamento Próximo",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept-Language", "value": "pt-BR" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"{{data_proxima}}\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}"
-            },
-            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
-          },
-          "response": []
-        },
-        {
           "name": "Cancelar Consulta - Validação Dados Obrigatórios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -468,6 +873,112 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Administração",
+      "item": [
+        {
+          "name": "Admin - Histórico de Migrações (Flyway)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/admin/flyway/history", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","flyway","history"] }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "agendamento_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "agendamento_id_proximo",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "data_proxima",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "unidade_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "profissional_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "data_hora",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "exame_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "exame_unidade_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "exame_profissional_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "exame_data_hora",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "triagem_id",
+      "value": "",
+      "type": "string"
     }
   ]
 }
