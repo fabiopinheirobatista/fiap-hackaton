@@ -1,11 +1,6 @@
 package br.com.fiap.hackaton.controller;
 
-import br.com.fiap.hackaton.dto.AgendamentoRequisicao;
-import br.com.fiap.hackaton.dto.ConfirmacaoRequisicao;
-import br.com.fiap.hackaton.dto.SugestaoResposta;
-import br.com.fiap.hackaton.dto.TriagemRequisicaoDTO;
-import br.com.fiap.hackaton.dto.RecusaRequisicao;
-import br.com.fiap.hackaton.dto.RecusaResposta;
+import br.com.fiap.hackaton.dto.*;
 import br.com.fiap.hackaton.enums.TipoAgendamento;
 import br.com.fiap.hackaton.model.Agendamento;
 import br.com.fiap.hackaton.service.ServicoAgendamento;
@@ -88,6 +83,14 @@ public class AgendamentoController {
         RecusaResposta resposta = servico.registrarRecusa(requisicao);
         return ResponseEntity.ok()
                 .header("X-mensagem", resposta.getMensagem())
+                .body(resposta);
+    }
+
+    @PostMapping("/cancelar")
+    public ResponseEntity<CancelamentoResposta> cancelar(@Valid @RequestBody CancelamentoRequisicao requisicao) {
+        CancelamentoResposta resposta = servico.cancelarAgendamento(requisicao.getAgendamentoId(), requisicao.getPacienteId());
+        return ResponseEntity.ok()
+                .header("X-mensagem", "Agendamento cancelado com sucesso")
                 .body(resposta);
     }
 

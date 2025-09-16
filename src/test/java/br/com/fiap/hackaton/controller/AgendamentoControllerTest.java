@@ -26,9 +26,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 class AgendamentoControllerTest {
 
@@ -238,5 +237,101 @@ class AgendamentoControllerTest {
 
     private void dummy(@Valid AgendamentoRequisicao req) {
         Objects.requireNonNull(req);
+    }
+
+    @Test
+    void cancelar_QuandoDadosValidos_DeveRetornarRespostaDeCancelamento() {
+        // Arrange
+        CancelamentoRequisicao requisicao = new CancelamentoRequisicao("a1", "p1", "Motivo do cancelamento");
+
+        CancelamentoResposta respostaEsperada = new CancelamentoResposta(
+                "a1",
+                "p1",
+                LocalDateTime.now().plusDays(2),
+                StatusAgendamento.CANCELADA,
+                "Agendamento cancelado com sucesso"
+        );
+
+        when(servico.cancelarAgendamento(requisicao.getAgendamentoId(), requisicao.getPacienteId()))
+                .thenReturn(respostaEsperada);
+
+        // Act
+        ResponseEntity<CancelamentoResposta> resposta = controller.cancelar(requisicao);
+
+        // Assert
+        assertNotNull(resposta);
+        assertEquals(HttpStatus.OK, resposta.getStatusCode());
+        assertEquals("Agendamento cancelado com sucesso", resposta.getHeaders().getFirst("X-mensagem"));
+        assertEquals(respostaEsperada, resposta.getBody());
+
+        verify(servico).cancelarAgendamento(requisicao.getAgendamentoId(), requisicao.getPacienteId());
+    }
+
+    @Test
+    void cancelar_QuandoAgendamentoNaoExiste_DeveRetornarErro() {
+        // Arrange
+        CancelamentoRequisicao requisicao = new CancelamentoRequisicao("id_inexistente", "p1", "Motivo do cancelamento");
+
+        when(servico.cancelarAgendamento(anyString(), anyString()))
+                .thenThrow(new IllegalArgumentException("Agendamento não encontrado"));
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+            controller.cancelar(requisicao)
+        );
+
+        assertEquals("Agendamento não encontrado", exception.getMessage());
+        verify(servico).cancelarAgendamento(requisicao.getAgendamentoId(), requisicao.getPacienteId());
+    }
+
+    @Test
+    void cancelar_QuandoPacienteNaoCorresponde_DeveRetornarErro() {
+        // Arrange
+        CancelamentoRequisicao requisicao = new CancelamentoRequisicao("a1", "p2", "Motivo do cancelamento");
+
+        when(servico.cancelarAgendamento(anyString(), anyString()))
+                .thenThrow(new IllegalArgumentException("Este agendamento não pertence ao paciente informado"));
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+            controller.cancelar(requisicao)
+        );
+
+        assertEquals("Este agendamento não pertence ao paciente informado", exception.getMessage());
+        verify(servico).cancelarAgendamento(requisicao.getAgendamentoId(), requisicao.getPacienteId());
+    }
+
+    @Test
+    void cancelar_QuandoAgendamentoJaEstaCancelado_DeveRetornarErro() {
+        // Arrange
+        CancelamentoRequisicao requisicao = new CancelamentoRequisicao("a1", "p1", "Motivo do cancelamento");
+
+        when(servico.cancelarAgendamento(anyString(), anyString()))
+                .thenThrow(new IllegalStateException("Agendamento já está cancelado"));
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalStateException.class, () ->
+            controller.cancelar(requisicao)
+        );
+
+        assertEquals("Agendamento já está cancelado", exception.getMessage());
+        verify(servico).cancelarAgendamento(requisicao.getAgendamentoId(), requisicao.getPacienteId());
+    }
+
+    @Test
+    void cancelar_QuandoPrazoExpirado_DeveRetornarErro() {
+        // Arrange
+        CancelamentoRequisicao requisicao = new CancelamentoRequisicao("a1", "p1", "Motivo do cancelamento");
+
+        when(servico.cancelarAgendamento(anyString(), anyString()))
+                .thenThrow(new IllegalStateException("Não é possível cancelar agendamentos com menos de 24 horas de antecedência"));
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalStateException.class, () ->
+            controller.cancelar(requisicao)
+        );
+
+        assertTrue(exception.getMessage().contains("Não é possível cancelar agendamentos com menos de"));
+        verify(servico).cancelarAgendamento(requisicao.getAgendamentoId(), requisicao.getPacienteId());
     }
 }

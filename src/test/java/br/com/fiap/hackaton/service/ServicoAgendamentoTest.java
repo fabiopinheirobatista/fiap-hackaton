@@ -1,6 +1,7 @@
 package br.com.fiap.hackaton.service;
 
 import br.com.fiap.hackaton.dto.AgendamentoRequisicao;
+import br.com.fiap.hackaton.dto.CancelamentoResposta;
 import br.com.fiap.hackaton.dto.SugestaoResposta;
 import br.com.fiap.hackaton.dto.TriagemDTO;
 import br.com.fiap.hackaton.entity.*;
@@ -20,8 +21,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 class ServicoAgendamentoTest {
 
@@ -285,5 +286,184 @@ class ServicoAgendamentoTest {
         assertEquals("u2", a.getUnidadeId());
         assertEquals("prof2", a.getProfissionalId());
         assertEquals(StatusAgendamento.REAGENDADA, a.getStatus());
+    }
+
+    @Test
+    void cancelarAgendamento_QuandoDadosValidos_DeveCancelarComSucesso() {
+        // Arrange
+        String agendamentoId = "a1";
+        String pacienteId = "p1";
+        String unidadeId = "u1";
+        String profissionalId = "prof1";
+        LocalDateTime dataHora = LocalDateTime.now().plusDays(2); // Mais de 24h no futuro
+
+        AgendamentoEntity agendamento = new AgendamentoEntity(
+                agendamentoId,
+                pacienteId,
+                unidadeId,
+                profissionalId,
+                TipoAgendamento.CLINICO_GERAL,
+                dataHora,
+                StatusAgendamento.AGENDADA
+        );
+
+        UnidadeEntity unidade = new UnidadeEntity(unidadeId, "Unidade Teste", "Centro");
+
+        when(agendamentoRepository.findById(agendamentoId)).thenReturn(Optional.of(agendamento));
+        when(unidadeRepository.findById(unidadeId)).thenReturn(Optional.of(unidade));
+        when(agendamentoRepository.save(any(AgendamentoEntity.class))).thenReturn(agendamento);
+        when(horarioDisponivelRepository.save(any(HorarioDisponivelEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        CancelamentoResposta resposta = service.cancelarAgendamento(agendamentoId, pacienteId);
+
+        // Assert
+        assertNotNull(resposta);
+        assertEquals(agendamentoId, resposta.getAgendamentoId());
+        assertEquals(pacienteId, resposta.getPacienteId());
+        assertEquals(StatusAgendamento.CANCELADA, resposta.getStatus());
+
+        verify(agendamentoRepository).findById(agendamentoId);
+        verify(unidadeRepository).findById(unidadeId);
+        verify(agendamentoRepository).save(any(AgendamentoEntity.class));
+        verify(horarioDisponivelRepository).save(any(HorarioDisponivelEntity.class));
+    }
+
+    @Test
+    void cancelarAgendamento_QuandoAgendamentoNaoExiste_DeveLancarExcecao() {
+        // Arrange
+        String agendamentoId = "id_inexistente";
+        String pacienteId = "p1";
+
+        when(agendamentoRepository.findById(agendamentoId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                service.cancelarAgendamento(agendamentoId, pacienteId)
+        );
+
+        assertEquals("Agendamento não encontrado", exception.getMessage());
+        verify(agendamentoRepository).findById(agendamentoId);
+        verifyNoMoreInteractions(agendamentoRepository, unidadeRepository, horarioDisponivelRepository);
+    }
+
+    @Test
+    void cancelarAgendamento_QuandoPacienteNaoCorresponde_DeveLancarExcecao() {
+        // Arrange
+        String agendamentoId = "a1";
+        String pacienteIdCorreto = "p1";
+        String pacienteIdIncorreto = "p2";
+
+        AgendamentoEntity agendamento = new AgendamentoEntity(
+                agendamentoId,
+                pacienteIdCorreto,
+                "u1",
+                "prof1",
+                TipoAgendamento.CLINICO_GERAL,
+                LocalDateTime.now().plusDays(2),
+                StatusAgendamento.AGENDADA
+        );
+
+        when(agendamentoRepository.findById(agendamentoId)).thenReturn(Optional.of(agendamento));
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                service.cancelarAgendamento(agendamentoId, pacienteIdIncorreto)
+        );
+
+        assertEquals("Este agendamento não pertence ao paciente informado", exception.getMessage());
+        verify(agendamentoRepository).findById(agendamentoId);
+        verifyNoMoreInteractions(agendamentoRepository, unidadeRepository, horarioDisponivelRepository);
+    }
+
+    @Test
+    void cancelarAgendamento_QuandoJaCancelado_DeveLancarExcecao() {
+        // Arrange
+        String agendamentoId = "a1";
+        String pacienteId = "p1";
+
+        AgendamentoEntity agendamento = new AgendamentoEntity(
+                agendamentoId,
+                pacienteId,
+                "u1",
+                "prof1",
+                TipoAgendamento.CLINICO_GERAL,
+                LocalDateTime.now().plusDays(2),
+                StatusAgendamento.CANCELADA // Já está cancelado
+        );
+
+        when(agendamentoRepository.findById(agendamentoId)).thenReturn(Optional.of(agendamento));
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+                service.cancelarAgendamento(agendamentoId, pacienteId)
+        );
+
+        assertEquals("Agendamento já está cancelado", exception.getMessage());
+        verify(agendamentoRepository).findById(agendamentoId);
+        verifyNoMoreInteractions(agendamentoRepository, unidadeRepository, horarioDisponivelRepository);
+    }
+
+    @Test
+    void cancelarAgendamento_QuandoPrazoExpirado_DeveLancarExcecao() {
+        // Arrange
+        String agendamentoId = "a1";
+        String pacienteId = "p1";
+
+        // Data menos de 24h no futuro (prazo expirado)
+        LocalDateTime dataProxima = LocalDateTime.now().plusHours(23);
+
+        AgendamentoEntity agendamento = new AgendamentoEntity(
+                agendamentoId,
+                pacienteId,
+                "u1",
+                "prof1",
+                TipoAgendamento.CLINICO_GERAL,
+                dataProxima,
+                StatusAgendamento.AGENDADA
+        );
+
+        when(agendamentoRepository.findById(agendamentoId)).thenReturn(Optional.of(agendamento));
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+                service.cancelarAgendamento(agendamentoId, pacienteId)
+        );
+
+        assertTrue(exception.getMessage().contains("Não é possível cancelar agendamentos com menos de"));
+        verify(agendamentoRepository).findById(agendamentoId);
+        verifyNoMoreInteractions(agendamentoRepository, unidadeRepository, horarioDisponivelRepository);
+    }
+
+    @Test
+    void cancelarAgendamento_QuandoUnidadeNaoEncontrada_DeveLancarExcecao() {
+        // Arrange
+        String agendamentoId = "a1";
+        String pacienteId = "p1";
+        String unidadeId = "u1";
+
+        AgendamentoEntity agendamento = new AgendamentoEntity(
+                agendamentoId,
+                pacienteId,
+                unidadeId,
+                "prof1",
+                TipoAgendamento.CLINICO_GERAL,
+                LocalDateTime.now().plusDays(2),
+                StatusAgendamento.AGENDADA
+        );
+
+        when(agendamentoRepository.findById(agendamentoId)).thenReturn(Optional.of(agendamento));
+        when(agendamentoRepository.save(any(AgendamentoEntity.class))).thenReturn(agendamento);
+        when(unidadeRepository.findById(unidadeId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+                service.cancelarAgendamento(agendamentoId, pacienteId)
+        );
+
+        assertEquals("Unidade não encontrada", exception.getMessage());
+        verify(agendamentoRepository).findById(agendamentoId);
+        verify(agendamentoRepository).save(any(AgendamentoEntity.class));
+        verify(unidadeRepository).findById(unidadeId);
     }
 }
