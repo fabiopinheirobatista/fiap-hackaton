@@ -298,6 +298,119 @@
           }
         }
       ]
+    },
+    {
+      "name": "História 4 - Verificar Consulta Agendada",
+      "item": [
+        {
+          "name": "Buscar Consultas Ativas do Paciente",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/p1/consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p1","consultas","ativas"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Histórico de Consultas do Paciente",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/p1/consultas/historico", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p1","consultas","historico"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Todas Consultas do Paciente",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/p1/consultas/todas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p1","consultas","todas"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Consultas - Paciente 2",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/p2/consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p2","consultas","ativas"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Consultas - Paciente 3",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/p3/consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p3","consultas","ativas"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Validação - ID Paciente Vazio",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/ /consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes"," ","consultas","ativas"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Validação - ID Paciente Muito Longo",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/paciente_com_id_muito_longo_para_ser_valido_no_sistema/consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","paciente_com_id_muito_longo_para_ser_valido_no_sistema","consultas","ativas"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Histórico - Paciente com Várias Consultas",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/p2/consultas/historico", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p2","consultas","historico"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Todas Consultas - Paciente com Histórico Extenso",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/p3/consultas/todas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p3","consultas","todas"] }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

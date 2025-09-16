@@ -25,4 +25,16 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoEntity, 
     List<AgendamentoEntity> findByUnidadeIdAndDataHoraBetween(@Param("unidadeId") String unidadeId,
                                                                @Param("inicio") LocalDateTime inicio,
                                                                @Param("fim") LocalDateTime fim);
+
+    @Query("SELECT a FROM AgendamentoEntity a WHERE a.pacienteId = :pacienteId AND a.dataHora >= :agora AND a.status IN (:statusAtivos) ORDER BY a.dataHora ASC")
+    List<AgendamentoEntity> findAgendamentosAtivosPorPaciente(@Param("pacienteId") String pacienteId,
+                                                              @Param("agora") LocalDateTime agora,
+                                                              @Param("statusAtivos") List<StatusAgendamento> statusAtivos);
+
+    @Query("SELECT a FROM AgendamentoEntity a WHERE a.pacienteId = :pacienteId AND a.dataHora < :agora ORDER BY a.dataHora DESC")
+    List<AgendamentoEntity> findHistoricoAtendimentosPorPaciente(@Param("pacienteId") String pacienteId,
+                                                                 @Param("agora") LocalDateTime agora);
+
+    @Query("SELECT a FROM AgendamentoEntity a WHERE a.pacienteId = :pacienteId ORDER BY a.dataHora DESC")
+    List<AgendamentoEntity> findAllByPacienteId(@Param("pacienteId") String pacienteId);
 }
