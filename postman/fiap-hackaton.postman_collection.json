@@ -349,64 +349,121 @@
             "url": { "raw": "http://localhost:8080/api/pacientes/p2/consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p2","consultas","ativas"] }
           },
           "response": []
-        },
+        }
+      ]
+    },
+    {
+      "name": "História 5 - Cancelar Consulta Agendada",
+      "item": [
         {
-          "name": "Buscar Consultas - Paciente 3",
+          "name": "Confirmar Agendamento para Cancelamento",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Accept-Language", "value": "pt-BR" }
             ],
-            "url": { "raw": "http://localhost:8080/api/pacientes/p3/consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p3","consultas","ativas"] }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-25T09:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
           },
           "response": []
         },
         {
-          "name": "Validação - ID Paciente Vazio",
+          "name": "Cancelar Consulta - Cancelamento Válido",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Accept-Language", "value": "pt-BR" }
             ],
-            "url": { "raw": "http://localhost:8080/api/pacientes/ /consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes"," ","consultas","ativas"] }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agendamentoId\": \"{{agendamento_id}}\",\n  \"pacienteId\": \"p1\",\n  \"motivo\": \"Não poderei comparecer\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/cancelar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","cancelar"] }
           },
           "response": []
         },
         {
-          "name": "Validação - ID Paciente Muito Longo",
+          "name": "Cancelar Consulta - Agendamento Inexistente",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Accept-Language", "value": "pt-BR" }
             ],
-            "url": { "raw": "http://localhost:8080/api/pacientes/paciente_com_id_muito_longo_para_ser_valido_no_sistema/consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","paciente_com_id_muito_longo_para_ser_valido_no_sistema","consultas","ativas"] }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agendamentoId\": \"id_inexistente\",\n  \"pacienteId\": \"p1\",\n  \"motivo\": \"Não poderei comparecer\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/cancelar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","cancelar"] }
           },
           "response": []
         },
         {
-          "name": "Histórico - Paciente com Várias Consultas",
+          "name": "Cancelar Consulta - Paciente Incorreto",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Accept-Language", "value": "pt-BR" }
             ],
-            "url": { "raw": "http://localhost:8080/api/pacientes/p2/consultas/historico", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p2","consultas","historico"] }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agendamentoId\": \"{{agendamento_id}}\",\n  \"pacienteId\": \"p2\",\n  \"motivo\": \"Não poderei comparecer\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/cancelar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","cancelar"] }
           },
           "response": []
         },
         {
-          "name": "Todas Consultas - Paciente com Histórico Extenso",
+          "name": "Cancelar Consulta - Prazo Expirado",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Accept-Language", "value": "pt-BR" }
             ],
-            "url": { "raw": "http://localhost:8080/api/pacientes/p3/consultas/todas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p3","consultas","todas"] }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agendamentoId\": \"{{agendamento_id_proximo}}\",\n  \"pacienteId\": \"p1\",\n  \"motivo\": \"Não poderei comparecer\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/cancelar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","cancelar"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirmar Agendamento Próximo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"{{data_proxima}}\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar Consulta - Validação Dados Obrigatórios",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"motivo\": \"Não poderei comparecer\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/cancelar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","cancelar"] }
           },
           "response": []
         }

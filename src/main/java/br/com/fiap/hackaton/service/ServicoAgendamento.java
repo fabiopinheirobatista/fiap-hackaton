@@ -1,10 +1,6 @@
 package br.com.fiap.hackaton.service;
 
-import br.com.fiap.hackaton.dto.AgendamentoRequisicao;
-import br.com.fiap.hackaton.dto.RecusaRequisicao;
-import br.com.fiap.hackaton.dto.RecusaResposta;
-import br.com.fiap.hackaton.dto.SugestaoResposta;
-import br.com.fiap.hackaton.dto.TriagemDTO;
+import br.com.fiap.hackaton.dto.*;
 import br.com.fiap.hackaton.entity.*;
 import br.com.fiap.hackaton.enums.MensagemErroEnum;
 import br.com.fiap.hackaton.enums.StatusAgendamento;
@@ -29,6 +25,8 @@ public class ServicoAgendamento {
     private final AgendamentoRepository repositorioAgendamento;
     private final HorarioDisponivelRepository repositorioHorario;
     private final TriagemRepository repositorioTriagem;
+
+    private static final int HORAS_MINIMAS_PARA_CANCELAMENTO = 24;
 
     public ServicoAgendamento(PacienteRepository repositorioPaciente,
                               UnidadeRepository repositorioUnidade,
@@ -371,5 +369,48 @@ public class ServicoAgendamento {
         } else {
             return new RecusaResposta("Sugestão recusada. Nenhuma alternativa disponível no momento.", null);
         }
+    }
+
+    @Transactional
+    public CancelamentoResposta cancelarAgendamento(String agendamentoId, String pacienteId) {
+        AgendamentoEntity agendamento = repositorioAgendamento.findById(agendamentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
+
+        if (!agendamento.getPacienteId().equals(pacienteId)) {
+            throw new IllegalArgumentException("Este agendamento não pertence ao paciente informado");
+        }
+
+        if (agendamento.getStatus() == StatusAgendamento.CANCELADA) {
+            throw new IllegalStateException("Agendamento já está cancelado");
+        }
+
+        LocalDateTime agora = LocalDateTime.now();
+        if (agora.plus(Duration.ofHours(HORAS_MINIMAS_PARA_CANCELAMENTO)).isAfter(agendamento.getDataHora())) {
+            throw new IllegalStateException("Não é possível cancelar agendamentos com menos de " +
+                                          HORAS_MINIMAS_PARA_CANCELAMENTO + " horas de antecedência");
+        }
+
+        // Alterar status para CANCELADA
+        agendamento.setStatus(StatusAgendamento.CANCELADA);
+        repositorioAgendamento.save(agendamento);
+
+        // Restaurar o horário na agenda do profissional
+        HorarioDisponivelEntity horarioDisponivel = new HorarioDisponivelEntity();
+        horarioDisponivel.setDataHora(agendamento.getDataHora());
+        horarioDisponivel.setIdProfissional(agendamento.getProfissionalId());
+
+        UnidadeEntity unidade = repositorioUnidade.findById(agendamento.getUnidadeId())
+                .orElseThrow(() -> new IllegalStateException("Unidade não encontrada"));
+        horarioDisponivel.setUnidade(unidade);
+
+        repositorioHorario.save(horarioDisponivel);
+
+        return new CancelamentoResposta(
+                agendamento.getId(),
+                agendamento.getPacienteId(),
+                agendamento.getDataHora(),
+                agendamento.getStatus(),
+                "Agendamento cancelado com sucesso"
+        );
     }
 }
