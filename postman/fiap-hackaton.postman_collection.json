@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "f0a1b2c3-d4e5-6789-abcd-ef0123456789",
 		"name": "FIAP Hackaton - API Agendamento de Consultas e Exames",
-		"description": "Coleção abrangente de testes para a API de agendamento de consultas médicas com dados de teste extensivos. Os dados de teste são inseridos automaticamente pelo Flyway na inicialização da aplicação.",
+		"description": "Coleção abrangente de testes para a API de agendamento de consultas médicas. As migrações do Flyway populam o banco MySQL na inicialização da aplicação.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "12345678"
 	},

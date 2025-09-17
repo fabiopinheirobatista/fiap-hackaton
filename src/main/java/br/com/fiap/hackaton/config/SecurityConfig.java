@@ -22,7 +22,6 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Only secure the /admin/reset endpoint
                 .requestMatchers("/admin/reset").hasRole("ADMIN")
                 .anyRequest().permitAll()
             )
