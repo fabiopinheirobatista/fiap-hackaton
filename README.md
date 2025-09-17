@@ -1,5 +1,6 @@
-# fiap-hackaton
-Desenvolvimento da 5ª fase do FIAP - Hackathon: Sistema de Agendamento de Consultas Médicas
+# FIAP Hackaton - Medical Appointments API
+
+Sistema de Agendamento de Consultas Médicas desenvolvido para a 5ª fase do FIAP - Hackathon.
 
 ## Sobre o Projeto
 
@@ -30,292 +31,196 @@ O projeto segue a arquitetura MVC (Model-View-Controller) com as seguintes camad
 - **DTO**: Objetos de transferência de dados entre camadas
 - **Enum**: Tipos enumerados usados no sistema
 
-## Modelo de Dados
+## Como Executar
 
-A estrutura do banco de dados inclui as seguintes entidades principais:
+1. **Clonar o repositório**
+   ```bash
+   git clone <repository-url>
+   cd fiap-hackaton
+   ```
 
-1. **Pacientes**: Armazena informações dos pacientes
-2. **Unidades**: Representa as unidades de atendimento médico
-3. **Agendamentos**: Registra os agendamentos de consultas e exames
-4. **Horários Disponíveis**: Controla os horários disponíveis para agendamento
-5. **Triagens**: Armazena informações de triagem para alguns tipos de agendamento
-6. **Bloqueios**: Registra bloqueios de horários (por férias de profissionais, etc.)
-7. **Lista de Espera**: Controla pacientes em lista de espera para atendimento
+2. **Executar a aplicação**
+   ```bash
+   ./mvnw spring-boot:run
+   ```
 
-## Dados de Teste
+3. **Acessar a aplicação**
+   - URL base: `http://localhost:8080`
+   - Console H2 (desenvolvimento): `http://localhost:8080/h2-console`
 
-A aplicação utiliza o Flyway para gerar automaticamente dados de teste quando iniciada. **Não é necessário fazer requisições para inserir massas de dados**. Os dados de teste incluem:
+## Test Data (Massa de Dados)
 
-### Pacientes
-- **p1**: João Silva
-- **p2**: Maria Oliveira 
-- **p3**: Carlos Santos
+A aplicação utiliza o Flyway para gerar automaticamente dados de teste quando iniciada. **Não é necessário fazer requisições para inserir test data**. Os dados de teste incluem:
 
-### Unidades de Atendimento
-- **u1**: Clínica Central (Centro)
-  - Especialidades: CLINICO_GERAL, CARDIOLOGIA, ORTOPEDIA
-- **u2**: Hospital Zona Sul (Zona Sul)
-  - Especialidades: CLINICO_GERAL, EXAME_SANGUE, PEDIATRIA
-- **u3**: Posto de Saúde Norte (Zona Norte)
-  - Especialidades: CLINICO_GERAL, GINECOLOGIA
+### Pacientes (Patients)
+- **p1**: João Silva - General patient for basic consultations
+- **p2**: Maria Oliveira - Patient with multiple appointments
+- **p3**: Carlos Santos - Patient for conflict testing
+- **p4**: Ana Costa - Patient for urgent triage cases
+- **p5**: Pedro Lima - Patient for pre-operative procedures
 
-### Horários Disponíveis
-- Unidade u1 (prof1): Dias 17, 18 e 25 de setembro de 2025, diversos horários
-- Unidade u2 (prof2): Dias 17 e 18 de setembro de 2025, diversos horários
-- Unidade u3 (prof3): Dias 17 e 18 de setembro de 2025, diversos horários
+### Unidades (Medical Units)
+- **u1**: Hospital Central - Main hospital unit (Centro)
+- **u2**: Clínica Norte - Laboratory for blood tests (Zona Norte)
+- **u3**: UBS Sul - Basic health unit (Zona Sul)
 
-### Triagens
-- **t1**: Paciente p1, urgência 5, sangramento intenso
-- **t2**: Paciente p2, urgência 4, pré-operatório cirurgia cardíaca
+### Profissionais (Healthcare Professionals)
+- **prof1**: Dr. Silva - General practitioner
+- **prof2**: Dr. Santos - Laboratory technician
+- **prof3**: Dra. Lima - Specialist
 
-Todos estes dados já estão disponíveis para testes na inicialização da aplicação através da migration V4__dados_teste.sql.
+### Tipos de Atendimento (Service Types)
+- **CLINICO_GERAL**: General practice consultations
+- **EXAME_SANGUE**: Blood tests
+- **CARDIOLOGIA**: Cardiology consultations
+- **DERMATOLOGIA**: Dermatology consultations
 
-## Funcionalidades Implementadas
+## Coleção do Postman (Postman Collection)
 
-### História 1 e 2: Agendamentos Básicos
-- Sugestão de agendamentos com base em preferências do paciente
-- Confirmação de agendamentos
-- Recusa de sugestões e solicitação de alternativas
+O projeto inclui uma coleção completa do Postman para testes da API localizada em:
+```
+postman/fiap-hackaton.postman_collection.json
+```
 
-### História 3: Visualização de Agenda por Unidade e Especialidade
-- Visualização da agenda médica por unidade e especialidade
-- Criação de bloqueios de horários
+### Como Importar no Postman
 
-### História 4: Verificação de Consultas Agendadas
-- Consulta de agendamentos ativos por paciente
-- Visualização do histórico de consultas
-- Listagem de todas as consultas de um paciente
-
-### História 5: Cancelamento de Consulta Agendada
-- Cancelamento de consultas com antecedência
-- Liberação da vaga para outros pacientes
-- Validação do prazo para cancelamento (24 horas antes do atendimento)
-
-## Regras de Negócio Principais
-
-1. **Agendamento de Consultas**:
-   - Um paciente não pode ter dois agendamentos no mesmo horário
-   - É necessário verificar a disponibilidade do horário escolhido
-   - Alguns tipos de agendamento exigem triagem prévia
-
-2. **Cancelamento de Consultas**:
-   - Só é possível cancelar consultas com pelo menos 24 horas de antecedência
-   - Ao cancelar, o status da consulta é atualizado para "CANCELADA"
-   - O horário cancelado volta para a agenda do profissional
-
-3. **Reagendamento**:
-   - Não é possível reagendar consultas já canceladas
-   - Um reagendamento altera o status da consulta para "REAGENDADA"
-
-4. **Bloqueio de Horários**:
-   - Administradores podem bloquear horários específicos
-   - Bloqueios podem ser para um profissional específico ou para todos
-
-## Validações Implementadas
-
-O sistema utiliza Bean Validation para validar os dados de entrada:
-
-- **@Valid**: Validação de objetos complexos
-- **@NotNull**: Campos obrigatórios
-- **@NotBlank**: Campos de texto obrigatórios e não vazios
-- **@Size**: Limites de tamanho para campos de texto
-- Validações personalizadas para regras de negócio específicas
-
-## Tratamento de Erros
-
-A API implementa tratamento de exceções para fornecer mensagens de erro claras:
-
-- **IllegalArgumentException**: Para dados inválidos (HTTP 400)
-- **IllegalStateException**: Para conflitos de estado (HTTP 409)
-- **MethodArgumentNotValidException**: Para falhas de validação de dados
-- **ConstraintViolationException**: Para violações de restrições de validação
-
-## Cobertura de Testes
-
-O projeto possui uma extensa cobertura de testes:
-
-- **Testes Unitários**: Para serviços e DTOs
-- **Testes de Integração**: Para controladores e repositórios
-- **Testes de Validação**: Para validação de regras de negócio
-
-Os testes utilizam banco H2 em memória para garantir execução rápida e isolada, e cobrem mais de 80% do código desenvolvido, validando:
-- Funcionalidades de agendamento, cancelamento e consulta
-- Validações de dados
-- Regras de negócio específicas
-
-## Como Executar o Projeto
-
-### Pré-requisitos
-- Java 17+ instalado
-- Maven 3.6+ instalado
-- MySQL instalado e acessível em localhost (porta 3306)
-
-### Configurar banco MySQL
-- Acesse o MySQL com um usuário administrativo e execute **apenas** o comando de criação do banco de dados:
-  ```sql
-  CREATE DATABASE IF NOT EXISTS hackaton CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-  ```
-- As credenciais esperadas pela aplicação (arquivo `src/main/resources/application-mysql.properties`) são:
-  - usuário: `root`
-  - senha: `root`
-- Se quiser usar credenciais diferentes, atualize `src/main/resources/application-mysql.properties` ou forneça variáveis de ambiente apropriadas.
-
-### Aplicar migrações e iniciar a aplicação (perfil mysql)
-- As migrações Flyway estão em `src/main/resources/db/migration` (V1, V2, V3, V4, etc.).
-- O Flyway executará automaticamente todas essas migrações quando a aplicação for iniciada, incluindo a inserção dos dados de teste.
-- Para iniciar a aplicação apontando para o MySQL:
-  ```
-  mvn spring-boot:run -Dspring-boot.run.profiles=mysql -DskipTests
-  ```
-
-### Rodar a aplicação em modo desenvolvimento (H2)
-- Para usar o perfil `dev` que roda com H2 em memória e aplica as migrações Flyway em memória:
-  ```
-  mvn spring-boot:run -Dspring-boot.run.profiles=dev -DskipTests
-  ```
-
-### Executar testes
-- Os testes de unidade e integração usam H2 e são executáveis com:
-  ```
-  mvn test
-  ```
-- Executar apenas testes específicos:
-  ```
-  mvn -Dtest=AppointmentIntegrationTest test
-  mvn -Dtest=ConcurrentBookingTest test
-  ```
-
-## Postman
-
-A coleção Postman foi significativamente expandida e agora oferece uma cobertura abrangente de testes para a API:
-
-### Arquivo de Importação
-- **Coleção pronta para importação**: `postman/fiap-hackaton.postman_collection.json`
-- **URL base**: `http://localhost:8080`
-- **Importe no Postman** e execute as requisições organizadas por cenários
+1. Abra o Postman
+2. Clique em "Import"
+3. Selecione o arquivo `postman/fiap-hackaton.postman_collection.json`
+4. A coleção será importada com todas as requisições organizadas por funcionalidade
 
 ### Estrutura da Coleção
 
-#### 1. **Configuração Inicial**
-- Reset de dados administrativo
-- Configuração do ambiente de testes
+A coleção está organizada nas seguintes pastas:
 
-#### 2. **História 1 e 2 - Agendamentos Básicos**
-- Sugestão de agendamentos válidos
-- Recusa de sugestões e solicitação de próximas opções
-- Confirmação de agendamentos
-- Testes de conflitos de horários
-- Validações de dados obrigatórios
+1. **Initial Setup**
+   - Admin - Reset Data: Redefine dados do sistema (requer autenticação)
 
-#### 3. **História 3 - Visualizar Agenda por Unidade e Especialidade**
-- Visualização de agendas por especialidade
-- Criação de bloqueios de horários
-- Validações de unidades e dados obrigatórios
+2. **Story 1 & 2 - Basic Appointments**
+   - Suggest Appointment - Valid Request
+   - Reject Suggestion - Request Next
+   - Confirm Appointment - Valid
+   - Confirm Appointment - Conflict (Same Time)
+   - Suggest Appointment - Missing Patient ID (Validation)
 
-#### 4. **Exames com Triagem**
-- Sugestão de exames com triagem urgente
-- Exames pré-operatórios
-- Confirmação de exames com triagem
-- Reagendamento de exames
-- Validações específicas para triagem
+3. **Story 3 - View Schedule by Unit and Specialty**
+   - View Schedule - General Practice
+   - View Schedule - Blood Test
+   - Create Block - Professional on Vacation
 
-#### 5. **História 4 - Verificar Consulta Agendada**
-- Consultas ativas por paciente
-- Histórico de consultas
-- Listagem completa de consultas
-- Testes para múltiplos pacientes
+4. **Tests with Triage**
+   - Suggest Test with Triage - Urgent
+   - Suggest Pre-operative Test
 
-#### 6. **História 5 - Cancelar Consulta Agendada**
-- Cancelamentos válidos
-- Validação de prazos (24h de antecedência)
-- Testes de agendamentos inexistentes
-- Validação de pacientes incorretos
-- Testes de dados obrigatórios
+5. **Patient Consultation History**
+   - Get Active Appointments by Patient
+   - Get Patient Medical History
 
-#### 7. **Administração**
-- Histórico de migrações Flyway
-- Verificação dos dados de teste
+6. **Appointment Management**
+   - Cancel Appointment
+   - Reschedule Appointment
 
-#### 8. **Cenários Avançados - Múltiplas Especialidades**
-- **Cardiologia**: Consultas cardíacas com sintomas específicos
-- **Ortopedia**: Consultas ortopédicas para problemas musculares
-- **Pediatria**: Atendimento infantil com urgências
-- **Ginecologia**: Exames preventivos e consultas especializadas
-- Confirmação de agendamentos para cada especialidade
+### Variáveis da Coleção
 
-#### 9. **Testes de Carga e Volume**
-- Múltiplas sugestões sequenciais para diferentes pacientes
-- Simulação de agendas lotadas
-- Testes de concorrência de horários
-- Validação de capacidade do sistema
+A coleção utiliza as seguintes variáveis:
+- `base_url`: URL base da API (padrão: http://localhost:8080)
+- `unit_id`, `professional_id`, `date_time`: Valores obtidos dinamicamente
+- `appointment_id`, `exam_id`: IDs gerados durante os testes
 
-#### 10. **Cenários de Validação e Erro**
-- **Validação de urgência**: Testes com valores inválidos (0, 6+)
-- **Tipos inexistentes**: Especialidades não cadastradas
-- **Pacientes inexistentes**: Validação de IDs inválidos
-- **Localizações inexistentes**: Testes de regiões não atendidas
-- **JSON malformado**: Testes de formato inválido
+## Principais Endpoints da API
 
-#### 11. **Cenários de Diferentes Níveis de Urgência**
-- **Urgência 1**: Consultas de rotina e exames anuais
-- **Urgência 2**: Acompanhamentos pós-tratamento
-- **Urgência 3**: Sintomas moderados (febre persistente)
-- **Urgência 4**: Sintomas graves (dor no peito)
-- **Urgência 5**: Emergências (sangramento ativo)
+### Agendamentos
+- `POST /api/agendamentos/sugerir` - Solicitar sugestão de agendamento
+- `POST /api/agendamentos/confirmar` - Confirmar agendamento
+- `POST /api/agendamentos/recusar` - Recusar sugestão e solicitar próxima
+- `POST /api/agendamentos/cancelar` - Cancelar agendamento
+- `POST /api/agendamentos/reagendar` - Reagendar consulta
 
-#### 12. **Testes de Diferentes Unidades**
-- **Unidade u1**: Clínica Central (Centro)
-- **Unidade u2**: Hospital Zona Sul
-- **Unidade u3**: Posto de Saúde Norte
-- Visualização de agendas específicas por unidade
-- Confirmação de agendamentos em diferentes locais
+### Agenda
+- `GET /api/agenda/visualizar` - Visualizar agenda por unidade e especialidade
+- `POST /api/agenda/bloquear` - Criar bloqueio de horário
 
-#### 13. **Testes de Consultas para Todos os Pacientes**
-- Consultas ativas, históricas e completas para cada paciente
-- Validação com pacientes inexistentes
-- Cobertura completa dos 3 pacientes de teste
+### Consultas de Pacientes
+- `GET /api/consultas/paciente/{id}/agendamentos` - Agendamentos ativos do paciente
+- `GET /api/consultas/paciente/{id}/historico` - Histórico médico do paciente
 
-### Funcionalidades da Coleção
+### Administração
+- `POST /admin/reset` - Resetar dados do sistema (Basic Auth: admin/admin123)
 
-#### **Variáveis Dinâmicas**
-A coleção utiliza variáveis para gerenciar dinamicamente:
-- IDs de agendamentos criados
-- Dados de unidades e profissionais
-- Horários sugeridos pelo sistema
-- IDs específicos por especialidade
+## Testes
 
-#### **Testes Automatizados**
-Cada requisição inclui:
-- **Validação de status HTTP** apropriado
-- **Verificação de resposta** para dados essenciais
-- **Captura de variáveis** para uso em requisições subsequentes
-- **Testes de conteúdo** específicos do domínio
+Para executar os testes:
 
-#### **Cenários Realísticos**
-- **Sintomas específicos** para cada especialidade
-- **Dados demográficos** variados (diferentes idades, regiões)
-- **Níveis de urgência** contextualmente apropriados
-- **Fluxos completos** de agendamento a cancelamento
+```bash
+./mvnw test
+```
 
-### Como Usar a Coleção
+Os testes incluem:
+- Testes unitários de serviços
+- Testes de integração de controllers
+- Testes de repositório com @DataJpaTest
 
-1. **Importe** o arquivo `postman/fiap-hackaton.postman_collection.json` no Postman
-2. **Inicie a aplicação** com `mvn spring-boot:run -Dspring-boot.run.profiles=dev`
-3. **Execute "Admin - Resetar Dados"** se necessário
-4. **Execute as requisições** na ordem sugerida ou conforme necessário
-5. **Observe as variáveis** sendo populadas automaticamente
+## Tradução de Termos
 
-### Notas Importantes
+**"Massa de dados"** em inglês americano é **"Test Data"** ou **"Sample Data"**. Outros termos equivalentes:
+- **Mock Data**: Dados simulados
+- **Seed Data**: Dados iniciais
+- **Test Dataset**: Conjunto de dados de teste
+- **Sample Dataset**: Conjunto de dados de exemplo
 
-- **Dados de teste automáticos**: Não é necessário executar requisições para criar dados, pois eles são inseridos automaticamente pelo Flyway na inicialização
-- **Ordem de execução**: Algumas requisições dependem de variáveis definidas por requisições anteriores
-- **Reset de dados**: Use a requisição de reset quando necessário para limpar o estado
-- **Cobertura completa**: A coleção cobre todos os endpoints e cenários principais da API
+## Estrutura do Projeto
 
-## Observações Importantes
-- A configuração de produção não deve manter credenciais em texto; utilize variáveis de ambiente ou um secret manager.
-- Em perfil `mysql` o Flyway gerencia o schema (propriedade `spring.jpa.hibernate.ddl-auto=none`).
-- Se seu MySQL estiver em outra porta (não 3306), ajuste `src/main/resources/application-mysql.properties` ou use variáveis de ambiente.
-- Recomendado: criar um usuário específico para a aplicação em vez de usar `root`.
+```
+src/
+├── main/
+│   ├── java/br/com/fiap/hackaton/
+│   │   ├── controller/     # Controllers REST
+│   │   ├── service/        # Lógica de negócio
+│   │   ├── repository/     # Acesso a dados
+│   │   ├── entity/         # Entidades JPA
+│   │   ├── dto/           # Data Transfer Objects
+│   │   └── enums/         # Enumerações
+│   └── resources/
+│       ├── db/migration/   # Scripts Flyway
+│       └── application.properties
+└── test/                   # Testes unitários e integração
 
-Pronto. Siga os passos acima para rodar a aplicação localmente sem Docker.
+postman/
+└── fiap-hackaton.postman_collection.json  # Coleção Postman
+```
+
+## Resolução de Problemas de Testes
+
+Se houver falhas nos testes relacionadas ao ApplicationContext, verifique:
+
+1. **Configuração do banco H2**: Certifique-se que está configurado corretamente
+2. **Perfis ativos**: Verifique se o perfil de teste está ativo
+3. **Dependências**: Execute `./mvnw clean install` para atualizar dependências
+4. **Portas**: Certifique-se que a porta 8080 não está em uso
+
+## Merge para Branch Developer
+
+Para fazer merge das alterações na branch developer:
+
+```bash
+# Certifique-se de estar na branch fix/json-readme-update
+git add .
+git commit -m "Fix: Update Postman collection format and README documentation"
+
+# Mude para a branch developer
+git checkout developer
+
+# Faça o merge
+git merge fix/json-readme-update
+
+# Push das alterações
+git push origin developer
+```
+
+## Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma feature branch (`git checkout -b feature/nova-funcionalidade`)
+3. Commit suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
+4. Push para a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um Pull Request
