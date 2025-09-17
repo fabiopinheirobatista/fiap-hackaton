@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "f0a1b2c3-d4e5-6789-abcd-ef0123456789",
 		"name": "FIAP Hackaton - API Agendamento de Consultas e Exames",
-		"description": "Coleção abrangente de testes para a API de agendamento de consultas médicas. As migrações do Flyway populam o banco MySQL na inicialização da aplicação.",
+		"description": "Coleção abrangente de testes para a API de agendamento de consultas médicas. O sistema utiliza Flyway 10.19.0 com suporte completo ao MySQL 8.3. As migrações populam automaticamente o banco na inicialização da aplicação.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "12345678"
 	},
@@ -10,6 +10,41 @@
 		{
 			"name": "Configuração Inicial",
 			"item": [
+				{
+					"name": "Health Check - Verificar Status da API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"API está respondendo\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resposta em tempo adequado\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/actuator/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "Admin - Resetar Dados",
 					"event": [
@@ -19,6 +54,10 @@
 								"exec": [
 									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Sistema resetado com sucesso\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"success\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -38,9 +77,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{url_base}}/admin/reset",
+							"raw": "{{base_url}}/admin/reset",
 							"host": [
-								"{{url_base}}"
+								"{{base_url}}"
 							],
 							"path": [
 								"admin",
@@ -51,7 +90,7 @@
 					"response": []
 				}
 			],
-			"description": "Requisições para configurar o ambiente de testes. Nota: Os dados de teste são inseridos automaticamente pelo Flyway."
+			"description": "Requisições para configurar e verificar o ambiente de testes. O Flyway 10.19.0 com MySQL 8.3 insere dados de teste automaticamente durante a inicialização."
 		},
 		{
 			"name": "História 1 e 2 - Agendamentos Básicos",
@@ -724,7 +763,10 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"// Configuração automática da URL base",
+					"if (!pm.collectionVariables.get(\"base_url\")) {",
+					"    pm.collectionVariables.set(\"base_url\", \"http://localhost:8080\");",
+					"}"
 				]
 			}
 		},
@@ -733,56 +775,49 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"// Log global para debugging",
+					"console.log(\"Response Status:\", pm.response.code);",
+					"console.log(\"Response Time:\", pm.response.responseTime + \"ms\");"
 				]
 			}
 		}
 	],
 	"variable": [
 		{
-			"key": "url_base",
+			"key": "base_url",
 			"value": "http://localhost:8080",
-			"type": "string"
+			"type": "string",
+			"description": "URL base da API - Altere para http://localhost:8081 se a porta 8080 estiver em uso"
 		},
 		{
 			"key": "id_unidade",
 			"value": "",
-			"type": "string"
+			"type": "string",
+			"description": "ID da unidade médica (preenchido automaticamente)"
 		},
 		{
 			"key": "id_profissional",
 			"value": "",
-			"type": "string"
+			"type": "string",
+			"description": "ID do profissional (preenchido automaticamente)"
 		},
 		{
 			"key": "data_hora",
 			"value": "",
-			"type": "string"
+			"type": "string",
+			"description": "Data e hora do agendamento (preenchido automaticamente)"
 		},
 		{
 			"key": "id_agendamento",
 			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "id_unidade_exame",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "id_profissional_exame",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "data_hora_exame",
-			"value": "",
-			"type": "string"
+			"type": "string",
+			"description": "ID do agendamento criado (preenchido automaticamente)"
 		},
 		{
 			"key": "id_exame",
 			"value": "",
-			"type": "string"
+			"type": "string",
+			"description": "ID do exame agendado (preenchido automaticamente)"
 		}
 	]
 }

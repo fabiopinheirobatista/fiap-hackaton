@@ -13,8 +13,8 @@ O projeto **fiap-hackaton** é uma API REST desenvolvida para o gerenciamento de
 - **Spring Data JPA**: Para persistência de dados
 - **Spring Security**: Para autenticação e autorização
 - **Spring Validation**: Para validação de dados de entrada
-- **Flyway**: Para gerenciamento e versionamento de migrações do banco de dados
-- **MySQL**: Banco de dados relacional para desenvolvimento e produção
+- **Flyway 10.19.0**: Para gerenciamento e versionamento de migrações do banco de dados (com suporte ao MySQL 8.3)
+- **MySQL 8.3**: Banco de dados relacional para desenvolvimento e produção
 - **Lombok**: Para redução de código boilerplate
 - **Maven**: Gerenciamento de dependências e build
 - **JUnit e Spring Test**: Para testes unitários e de integração
@@ -30,6 +30,12 @@ O projeto segue a arquitetura MVC (Model-View-Controller) com as seguintes camad
 - **DTO**: Objetos de transferência de dados entre camadas
 - **Enum**: Tipos enumerados usados no sistema
 
+## Pré-requisitos
+
+- **Java 17** ou superior
+- **MySQL 8.0+** (testado com MySQL 8.3)
+- **Maven 3.6+**
+
 ## Como Executar
 
 1. **Clonar o repositório**
@@ -39,44 +45,60 @@ O projeto segue a arquitetura MVC (Model-View-Controller) com as seguintes camad
    ```
 
 2. **Configurar o banco de dados MySQL**
-- Não é necessário criar manualmente o schema: a aplicação cria o schema `hackaton` automaticamente ao inicializar (a URL de conexão em `src/main/resources/application.properties` já contém `createDatabaseIfNotExist=true`).
-- Configure as credenciais no arquivo `src/main/resources/application.properties` (padrão: root / root) se necessário.
-- As migrações do Flyway em `src/main/resources/db/migration` serão aplicadas automaticamente na inicialização.
+   
+   Configure as seguintes propriedades no arquivo `src/main/resources/application.properties`:
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/hackaton?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+   spring.datasource.username=root
+   spring.datasource.password=root
+   ```
+   
+   **Notas importantes:**
+   - O schema `hackaton` é criado automaticamente (parâmetro `createDatabaseIfNotExist=true`)
+   - As migrações do Flyway em `src/main/resources/db/migration` são aplicadas automaticamente na inicialização
+   - O Flyway 10.19.0 inclui suporte completo ao MySQL 8.3
+   - Dados de teste são inseridos automaticamente através das migrações
 
-3. **Executar a aplicação**
+3. **Instalar dependências e compilar**
    ```bash
-   ./mvnw spring-boot:run
+   mvn clean install
    ```
 
-4. **Acessar a aplicação**
-   - URL base: `http://localhost:8080`
+4. **Executar a aplicação**
+   ```bash
+   mvn spring-boot:run
+   ```
+   
+   **Porta alternativa:** Se a porta 8080 estiver em uso, adicione no `application.properties`:
+   ```properties
+   server.port=8081
+   ```
 
-## Test Data (Massa de Dados)
+5. **Verificar a aplicação**
+   
+   A aplicação estará disponível em: `http://localhost:8080`
+   
+   **Logs importantes durante a inicialização:**
+   - `Database: jdbc:mysql://localhost:3306/hackaton (MySQL 8.3)` - Conectou ao MySQL
+   - `Successfully validated X migrations` - Migrações validadas
+   - `Schema 'hackaton' is up to date` - Banco atualizado
 
-A aplicação utiliza o Flyway para gerar automaticamente dados de teste quando iniciada. **Não é necessário fazer requisições para inserir test data**. Os dados de teste incluem:
+## Banco de Dados
 
-### Pacientes (Patients)
-- **p1**: João Silva - General patient for basic consultations
-- **p2**: Maria Oliveira - Patient with multiple appointments
-- **p3**: Carlos Santos - Patient for conflict testing
-- **p4**: Ana Costa - Patient for urgent triage cases
-- **p5**: Pedro Lima - Patient for pre-operative procedures
+### Migrações Flyway
 
-### Unidades (Medical Units)
-- **u1**: Hospital Central - Main hospital unit (Centro)
-- **u2**: Clínica Norte - Laboratory for blood tests (Zona Norte)
-- **u3**: UBS Sul - Basic health unit (Zona Sul)
+O projeto utiliza Flyway para controle de versão do banco de dados. As migrações estão localizadas em `src/main/resources/db/migration/`:
 
-### Profissionais (Healthcare Professionals)
-- **prof1**: Dr. Silva - General practitioner
-- **prof2**: Dr. Santos - Laboratory technician
-- **prof3**: Dra. Lima - Specialist
+- `V1__inicio.sql` - Estrutura inicial das tabelas
+- `V2__adicionar_suporte_triagem.sql` - Sistema de triagem
+- `V3__bloqueios_e_lista_espera.sql` - Bloqueios e lista de espera
+- `V4__dados_teste.sql` - Dados de teste para desenvolvimento
 
-### Tipos de Atendimento (Service Types)
-- **CLINICO_GERAL**: General practice consultations
-- **EXAME_SANGUE**: Blood tests
-- **CARDIOLOGIA**: Cardiology consultations
-- **DERMATOLOGIA**: Dermatology consultations
+### Compatibilidade MySQL
+
+- **Versão recomendada:** MySQL 8.0+
+- **Testado com:** MySQL 8.3
+- **Flyway:** Versão 10.19.0 com plugin `flyway-mysql` para suporte completo ao MySQL 8.3
 
 ## Coleção do Postman (Postman Collection)
 
