@@ -2,11 +2,14 @@ package br.com.fiap.hackaton.repository;
 
 import br.com.fiap.hackaton.entity.AgendamentoEntity;
 import br.com.fiap.hackaton.enums.StatusAgendamento;
-import br.com.fiap.hackaton.enums.TipoAgendamento;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDateTime;
@@ -17,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ImportAutoConfiguration(exclude = FlywayAutoConfiguration.class)
+@TestPropertySource(properties = {"spring.flyway.enabled=false","spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration"})
 public class AgendamentoRepositoryTest {
 
     @Autowired

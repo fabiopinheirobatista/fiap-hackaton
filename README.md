@@ -14,8 +14,7 @@ O projeto **fiap-hackaton** é uma API REST desenvolvida para o gerenciamento de
 - **Spring Security**: Para autenticação e autorização
 - **Spring Validation**: Para validação de dados de entrada
 - **Flyway**: Para gerenciamento e versionamento de migrações do banco de dados
-- **MySQL**: Banco de dados relacional para ambiente de produção
-- **H2 Database**: Banco de dados em memória para ambiente de desenvolvimento e testes
+- **MySQL**: Banco de dados relacional para desenvolvimento e produção
 - **Lombok**: Para redução de código boilerplate
 - **Maven**: Gerenciamento de dependências e build
 - **JUnit e Spring Test**: Para testes unitários e de integração
@@ -39,14 +38,18 @@ O projeto segue a arquitetura MVC (Model-View-Controller) com as seguintes camad
    cd fiap-hackaton
    ```
 
-2. **Executar a aplicação**
+2. **Configurar o banco de dados MySQL**
+- Não é necessário criar manualmente o schema: a aplicação cria o schema `hackaton` automaticamente ao inicializar (a URL de conexão em `src/main/resources/application.properties` já contém `createDatabaseIfNotExist=true`).
+- Configure as credenciais no arquivo `src/main/resources/application.properties` (padrão: root / root) se necessário.
+- As migrações do Flyway em `src/main/resources/db/migration` serão aplicadas automaticamente na inicialização.
+
+3. **Executar a aplicação**
    ```bash
    ./mvnw spring-boot:run
    ```
 
-3. **Acessar a aplicação**
+4. **Acessar a aplicação**
    - URL base: `http://localhost:8080`
-   - Console H2 (desenvolvimento): `http://localhost:8080/h2-console`
 
 ## Test Data (Massa de Dados)
 
@@ -78,6 +81,7 @@ A aplicação utiliza o Flyway para gerar automaticamente dados de teste quando 
 ## Coleção do Postman (Postman Collection)
 
 O projeto inclui uma coleção completa do Postman para testes da API localizada em:
+
 ```
 postman/fiap-hackaton.postman_collection.json
 ```
@@ -193,8 +197,8 @@ postman/
 
 Se houver falhas nos testes relacionadas ao ApplicationContext, verifique:
 
-1. **Configuração do banco H2**: Certifique-se que está configurado corretamente
-2. **Perfis ativos**: Verifique se o perfil de teste está ativo
+1. **Configuração do banco**: Certifique que o MySQL está configurado corretamente e que o arquivo `src/main/resources/application.properties` aponta para o schema correto (`hackaton`).
+2. **Perfis ativos**: O projeto foi consolidado para usar um único profile; remova perfis adicionais ou garanta que não sobrescrevam as configurações de conexão.
 3. **Dependências**: Execute `./mvnw clean install` para atualizar dependências
 4. **Portas**: Certifique-se que a porta 8080 não está em uso
 

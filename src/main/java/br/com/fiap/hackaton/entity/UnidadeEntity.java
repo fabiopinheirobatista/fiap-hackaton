@@ -2,6 +2,7 @@ package br.com.fiap.hackaton.entity;
 
 import br.com.fiap.hackaton.enums.TipoAgendamento;
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
