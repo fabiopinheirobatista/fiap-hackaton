@@ -42,6 +42,34 @@ A estrutura do banco de dados inclui as seguintes entidades principais:
 6. **Bloqueios**: Registra bloqueios de horários (por férias de profissionais, etc.)
 7. **Lista de Espera**: Controla pacientes em lista de espera para atendimento
 
+## Dados de Teste
+
+A aplicação utiliza o Flyway para gerar automaticamente dados de teste quando iniciada. **Não é necessário fazer requisições para inserir massas de dados**. Os dados de teste incluem:
+
+### Pacientes
+- **p1**: João Silva
+- **p2**: Maria Oliveira 
+- **p3**: Carlos Santos
+
+### Unidades de Atendimento
+- **u1**: Clínica Central (Centro)
+  - Especialidades: CLINICO_GERAL, CARDIOLOGIA, ORTOPEDIA
+- **u2**: Hospital Zona Sul (Zona Sul)
+  - Especialidades: CLINICO_GERAL, EXAME_SANGUE, PEDIATRIA
+- **u3**: Posto de Saúde Norte (Zona Norte)
+  - Especialidades: CLINICO_GERAL, GINECOLOGIA
+
+### Horários Disponíveis
+- Unidade u1 (prof1): Dias 17, 18 e 25 de setembro de 2025, diversos horários
+- Unidade u2 (prof2): Dias 17 e 18 de setembro de 2025, diversos horários
+- Unidade u3 (prof3): Dias 17 e 18 de setembro de 2025, diversos horários
+
+### Triagens
+- **t1**: Paciente p1, urgência 5, sangramento intenso
+- **t2**: Paciente p2, urgência 4, pré-operatório cirurgia cardíaca
+
+Todos estes dados já estão disponíveis para testes na inicialização da aplicação através da migration V4__dados_teste.sql.
+
 ## Funcionalidades Implementadas
 
 ### História 1 e 2: Agendamentos Básicos
@@ -133,8 +161,8 @@ Os testes utilizam banco H2 em memória para garantir execução rápida e isola
 - Se quiser usar credenciais diferentes, atualize `src/main/resources/application-mysql.properties` ou forneça variáveis de ambiente apropriadas.
 
 ### Aplicar migrações e iniciar a aplicação (perfil mysql)
-- As migrações Flyway estão em `src/main/resources/db/migration` (V1, V2, V3, etc.).
-- O Flyway executará automaticamente todas essas migrações quando a aplicação for iniciada.
+- As migrações Flyway estão em `src/main/resources/db/migration` (V1, V2, V3, V4, etc.).
+- O Flyway executará automaticamente todas essas migrações quando a aplicação for iniciada, incluindo a inserção dos dados de teste.
 - Para iniciar a aplicação apontando para o MySQL:
   ```
   mvn spring-boot:run -Dspring-boot.run.profiles=mysql -DskipTests
@@ -158,16 +186,131 @@ Os testes utilizam banco H2 em memória para garantir execução rápida e isola
   ```
 
 ## Postman
-- Coleção pronta para importação: `postman/fiap-hackaton.postman_collection.json`.
-- Importe no Postman e execute as requisições contra `http://localhost:8080`.
-- A coleção inclui:
-  1. Configuração inicial (reset de dados)
-  2. Testes para agendamentos básicos
-  3. Testes para visualização de agenda
-  4. Testes para exames com triagem
-  5. Testes para verificação de consultas
-  6. Testes para cancelamento de consultas
-  7. Recursos administrativos
+
+A coleção Postman foi significativamente expandida e agora oferece uma cobertura abrangente de testes para a API:
+
+### Arquivo de Importação
+- **Coleção pronta para importação**: `postman/fiap-hackaton.postman_collection.json`
+- **URL base**: `http://localhost:8080`
+- **Importe no Postman** e execute as requisições organizadas por cenários
+
+### Estrutura da Coleção
+
+#### 1. **Configuração Inicial**
+- Reset de dados administrativo
+- Configuração do ambiente de testes
+
+#### 2. **História 1 e 2 - Agendamentos Básicos**
+- Sugestão de agendamentos válidos
+- Recusa de sugestões e solicitação de próximas opções
+- Confirmação de agendamentos
+- Testes de conflitos de horários
+- Validações de dados obrigatórios
+
+#### 3. **História 3 - Visualizar Agenda por Unidade e Especialidade**
+- Visualização de agendas por especialidade
+- Criação de bloqueios de horários
+- Validações de unidades e dados obrigatórios
+
+#### 4. **Exames com Triagem**
+- Sugestão de exames com triagem urgente
+- Exames pré-operatórios
+- Confirmação de exames com triagem
+- Reagendamento de exames
+- Validações específicas para triagem
+
+#### 5. **História 4 - Verificar Consulta Agendada**
+- Consultas ativas por paciente
+- Histórico de consultas
+- Listagem completa de consultas
+- Testes para múltiplos pacientes
+
+#### 6. **História 5 - Cancelar Consulta Agendada**
+- Cancelamentos válidos
+- Validação de prazos (24h de antecedência)
+- Testes de agendamentos inexistentes
+- Validação de pacientes incorretos
+- Testes de dados obrigatórios
+
+#### 7. **Administração**
+- Histórico de migrações Flyway
+- Verificação dos dados de teste
+
+#### 8. **Cenários Avançados - Múltiplas Especialidades**
+- **Cardiologia**: Consultas cardíacas com sintomas específicos
+- **Ortopedia**: Consultas ortopédicas para problemas musculares
+- **Pediatria**: Atendimento infantil com urgências
+- **Ginecologia**: Exames preventivos e consultas especializadas
+- Confirmação de agendamentos para cada especialidade
+
+#### 9. **Testes de Carga e Volume**
+- Múltiplas sugestões sequenciais para diferentes pacientes
+- Simulação de agendas lotadas
+- Testes de concorrência de horários
+- Validação de capacidade do sistema
+
+#### 10. **Cenários de Validação e Erro**
+- **Validação de urgência**: Testes com valores inválidos (0, 6+)
+- **Tipos inexistentes**: Especialidades não cadastradas
+- **Pacientes inexistentes**: Validação de IDs inválidos
+- **Localizações inexistentes**: Testes de regiões não atendidas
+- **JSON malformado**: Testes de formato inválido
+
+#### 11. **Cenários de Diferentes Níveis de Urgência**
+- **Urgência 1**: Consultas de rotina e exames anuais
+- **Urgência 2**: Acompanhamentos pós-tratamento
+- **Urgência 3**: Sintomas moderados (febre persistente)
+- **Urgência 4**: Sintomas graves (dor no peito)
+- **Urgência 5**: Emergências (sangramento ativo)
+
+#### 12. **Testes de Diferentes Unidades**
+- **Unidade u1**: Clínica Central (Centro)
+- **Unidade u2**: Hospital Zona Sul
+- **Unidade u3**: Posto de Saúde Norte
+- Visualização de agendas específicas por unidade
+- Confirmação de agendamentos em diferentes locais
+
+#### 13. **Testes de Consultas para Todos os Pacientes**
+- Consultas ativas, históricas e completas para cada paciente
+- Validação com pacientes inexistentes
+- Cobertura completa dos 3 pacientes de teste
+
+### Funcionalidades da Coleção
+
+#### **Variáveis Dinâmicas**
+A coleção utiliza variáveis para gerenciar dinamicamente:
+- IDs de agendamentos criados
+- Dados de unidades e profissionais
+- Horários sugeridos pelo sistema
+- IDs específicos por especialidade
+
+#### **Testes Automatizados**
+Cada requisição inclui:
+- **Validação de status HTTP** apropriado
+- **Verificação de resposta** para dados essenciais
+- **Captura de variáveis** para uso em requisições subsequentes
+- **Testes de conteúdo** específicos do domínio
+
+#### **Cenários Realísticos**
+- **Sintomas específicos** para cada especialidade
+- **Dados demográficos** variados (diferentes idades, regiões)
+- **Níveis de urgência** contextualmente apropriados
+- **Fluxos completos** de agendamento a cancelamento
+
+### Como Usar a Coleção
+
+1. **Importe** o arquivo `postman/fiap-hackaton.postman_collection.json` no Postman
+2. **Inicie a aplicação** com `mvn spring-boot:run -Dspring-boot.run.profiles=dev`
+3. **Execute "Admin - Resetar Dados"** se necessário
+4. **Execute as requisições** na ordem sugerida ou conforme necessário
+5. **Observe as variáveis** sendo populadas automaticamente
+
+### Notas Importantes
+
+- **Dados de teste automáticos**: Não é necessário executar requisições para criar dados, pois eles são inseridos automaticamente pelo Flyway na inicialização
+- **Ordem de execução**: Algumas requisições dependem de variáveis definidas por requisições anteriores
+- **Reset de dados**: Use a requisição de reset quando necessário para limpar o estado
+- **Cobertura completa**: A coleção cobre todos os endpoints e cenários principais da API
 
 ## Observações Importantes
 - A configuração de produção não deve manter credenciais em texto; utilize variáveis de ambiente ou um secret manager.
