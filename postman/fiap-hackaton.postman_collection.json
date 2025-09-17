@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "f0a1b2c3-d4e5-6789-abcd-ef0123456789",
     "name": "FIAP Hackaton - Agendamentos (PT-BR)",
-    "description": "Coleção de requisições para teste da API de agendamento de consultas médicas.",
+    "description": "Coleção de requisições para teste da API de agendamento de consultas médicas com dados de teste abrangentes. Os dados de teste já são inseridos automaticamente pelo Flyway na inicialização da aplicação.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -35,7 +35,7 @@
           }
         }
       ],
-      "description": "Requisições para configurar o ambiente de testes"
+      "description": "Requisições para configurar o ambiente de testes. Nota: Os dados de teste já são inseridos automaticamente pelo Flyway."
     },
     {
       "name": "História 1 e 2 - Agendamentos Básicos",
@@ -447,7 +447,7 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "// Criar uma nova triagem para testes",
+                  "// Usar triagem existente criada pelo Flyway",
                   "pm.collectionVariables.set(\"triagem_id\", \"t1\");"
                 ],
                 "type": "text/javascript"
@@ -900,9 +900,920 @@
             ],
             "url": { "raw": "http://localhost:8080/admin/flyway/history", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","flyway","history"] }
           }
+        },
+        {
+          "name": "Admin - Verificar Dados de Teste",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Basic YWRtaW46YWRtaW4xMjM=" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/admin/dados-teste", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["admin","dados-teste"] }
+          }
         }
       ]
-    }
+    },
+    {
+      "name": "Cenários Avançados - Múltiplas Especialidades",
+      "item": [
+        {
+          "name": "Sugerir Agendamento - Cardiologia",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"cardio_unidade_id\", jsonData.unidadeId);",
+                  "pm.collectionVariables.set(\"cardio_profissional_id\", jsonData.profissionalId);",
+                  "pm.collectionVariables.set(\"cardio_data_hora\", jsonData.dataHora);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p2\",\n  \"tipo\": \"CARDIOLOGIA\",\n  \"sintomas\": \"dor no peito, falta de ar\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 4\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Sugerir Agendamento - Ortopedia",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"ortho_unidade_id\", jsonData.unidadeId);",
+                  "pm.collectionVariables.set(\"ortho_profissional_id\", jsonData.profissionalId);",
+                  "pm.collectionVariables.set(\"ortho_data_hora\", jsonData.dataHora);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p3\",\n  \"tipo\": \"ORTOPEDIA\",\n  \"sintomas\": \"dor lombar intensa, limitação de movimento\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Sugerir Agendamento - Pediatria",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"pedia_unidade_id\", jsonData.unidadeId);",
+                  "pm.collectionVariables.set(\"pedia_profissional_id\", jsonData.profissionalId);",
+                  "pm.collectionVariables.set(\"pedia_data_hora\", jsonData.dataHora);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p2\",\n  \"tipo\": \"PEDIATRIA\",\n  \"sintomas\": \"febre alta, vômitos\",\n  \"localizacao\": \"Zona Sul\",\n  \"urgencia\": 4\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Sugerir Agendamento - Ginecologia",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"gineco_unidade_id\", jsonData.unidadeId);",
+                  "pm.collectionVariables.set(\"gineco_profissional_id\", jsonData.profissionalId);",
+                  "pm.collectionVariables.set(\"gineco_data_hora\", jsonData.dataHora);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p2\",\n  \"tipo\": \"GINECOLOGIA\",\n  \"sintomas\": \"exame preventivo de rotina\",\n  \"localizacao\": \"Zona Norte\",\n  \"urgencia\": 2\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Confirmar Múltiplos Agendamentos - Cardiologia",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"cardio_agendamento_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p2\",\n  \"unidadeId\": \"{{cardio_unidade_id}}\",\n  \"dataHora\": \"{{cardio_data_hora}}\",\n  \"profissionalId\": \"{{cardio_profissional_id}}\",\n  \"tipo\": \"CARDIOLOGIA\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          }
+        },
+        {
+          "name": "Confirmar Múltiplos Agendamentos - Ortopedia",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"ortho_agendamento_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p3\",\n  \"unidadeId\": \"{{ortho_unidade_id}}\",\n  \"dataHora\": \"{{ortho_data_hora}}\",\n  \"profissionalId\": \"{{ortho_profissional_id}}\",\n  \"tipo\": \"ORTOPEDIA\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Testes de Carga e Volume",
+      "item": [
+        {
+          "name": "Múltiplas Sugestões Sequenciais - Paciente 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"consulta de rotina - primeira tentativa\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 1\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Múltiplas Sugestões Sequenciais - Paciente 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p2\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"consulta de rotina - segunda tentativa\",\n  \"localizacao\": \"Zona Sul\",\n  \"urgencia\": 1\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Múltiplas Sugestões Sequenciais - Paciente 3",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p3\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"consulta de rotina - terceira tentativa\",\n  \"localizacao\": \"Zona Norte\",\n  \"urgencia\": 1\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Teste Agenda Lotada - Diferentes Horários",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 409\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 409]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T10:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          }
+        },
+        {
+          "name": "Teste Agenda Lotada - Horário Seguinte",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 409\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 409]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p2\",\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-17T11:00:00\",\n  \"profissionalId\": \"prof1\",\n  \"tipo\": \"CLINICO_GERAL\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cenários de Validação e Erro",
+      "item": [
+        {
+          "name": "Validação - Urgência Inválida (acima de 5)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"teste urgência inválida\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 6\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Validação - Urgência Inválida (abaixo de 1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"teste urgência inválida\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 0\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Validação - Tipo de Consulta Inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"ESPECIALIDADE_INEXISTENTE\",\n  \"sintomas\": \"teste tipo inválido\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Validação - Paciente Inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 or 404\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"paciente_inexistente\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"teste paciente inexistente\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Validação - Localização Inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 or 404\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"teste localização inexistente\",\n  \"localizacao\": \"Zona Inexistente\",\n  \"urgencia\": 3\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Validação - JSON Malformado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"teste json malformado\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3,\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cenários de Diferentes Níveis de Urgência",
+      "item": [
+        {
+          "name": "Sugestão Urgência 1 - Consulta Rotina",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"exame de rotina anual\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 1\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Sugestão Urgência 2 - Acompanhamento",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p2\",\n  \"tipo\": \"CARDIOLOGIA\",\n  \"sintomas\": \"acompanhamento pós-tratamento\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 2\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Sugestão Urgência 3 - Sintomas Moderados",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p3\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"febre persistente há 3 dias\",\n  \"localizacao\": \"Zona Sul\",\n  \"urgencia\": 3\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Sugestão Urgência 4 - Sintomas Graves",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CARDIOLOGIA\",\n  \"sintomas\": \"dor no peito irradiando para braço\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 4\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        },
+        {
+          "name": "Sugestão Urgência 5 - Emergência",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p2\",\n  \"tipo\": \"EXAME_SANGUE\",\n  \"sintomas\": \"sangramento ativo, perda de consciência\",\n  \"localizacao\": \"Zona Sul\",\n  \"urgencia\": 5\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/sugerir", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","sugerir"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Testes de Diferentes Unidades",
+      "item": [
+        {
+          "name": "Visualizar Agendas - Todas as Unidades",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeId\": \"u2\",\n  \"data\": \"2025-09-18\",\n  \"especialidade\": \"PEDIATRIA\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agenda/visualizar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agenda","visualizar"] }
+          }
+        },
+        {
+          "name": "Visualizar Agendas - Unidade Norte",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeId\": \"u3\",\n  \"data\": \"2025-09-18\",\n  \"especialidade\": \"GINECOLOGIA\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agenda/visualizar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agenda","visualizar"] }
+          }
+        },
+        {
+          "name": "Confirmar Agendamento - Unidade 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"u2_agendamento_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p2\",\n  \"unidadeId\": \"u2\",\n  \"dataHora\": \"2025-09-17T08:00:00\",\n  \"profissionalId\": \"prof2\",\n  \"tipo\": \"EXAME_SANGUE\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          }
+        },
+        {
+          "name": "Confirmar Agendamento - Unidade 3",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"u3_agendamento_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"p3\",\n  \"unidadeId\": \"u3\",\n  \"dataHora\": \"2025-09-17T08:30:00\",\n  \"profissionalId\": \"prof3\",\n  \"tipo\": \"GINECOLOGIA\"\n}"
+            },
+            "url": { "raw": "http://localhost:8080/api/agendamentos/confirmar", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","agendamentos","confirmar"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Testes de Consultas para Todos os Pacientes",
+      "item": [
+        {
+          "name": "Consultas Paciente 3 - Ativas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/p3/consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p3","consultas","ativas"] }
+          }
+        },
+        {
+          "name": "Consultas Paciente 3 - Histórico",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/p3/consultas/historico", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p3","consultas","historico"] }
+          }
+        },
+        {
+          "name": "Consultas Paciente 2 - Todas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/p2/consultas/todas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","p2","consultas","todas"] }
+          }
+        },
+        {
+          "name": "Consultas Paciente Inexistente - Validação",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "pt-BR" }
+            ],
+            "url": { "raw": "http://localhost:8080/api/pacientes/paciente_inexistente/consultas/ativas", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","pacientes","paciente_inexistente","consultas","ativas"] }
+          }
+        }
+      ]
+    },
   ],
   "event": [
     {
@@ -977,6 +1888,86 @@
     },
     {
       "key": "triagem_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cardio_unidade_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cardio_profissional_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cardio_data_hora",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cardio_agendamento_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ortho_unidade_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ortho_profissional_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ortho_data_hora",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ortho_agendamento_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pedia_unidade_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pedia_profissional_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pedia_data_hora",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "gineco_unidade_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "gineco_profissional_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "gineco_data_hora",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "u2_agendamento_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "u3_agendamento_id",
       "value": "",
       "type": "string"
     }
