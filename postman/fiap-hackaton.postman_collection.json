@@ -1,23 +1,23 @@
 {
 	"info": {
 		"_postman_id": "f0a1b2c3-d4e5-6789-abcd-ef0123456789",
-		"name": "FIAP Hackaton - Medical Appointments API",
-		"description": "Comprehensive test collection for the medical appointment scheduling API with extensive test data. Test data is automatically inserted by Flyway on application startup.",
+		"name": "FIAP Hackaton - API Agendamento de Consultas e Exames",
+		"description": "Coleção abrangente de testes para a API de agendamento de consultas médicas com dados de teste extensivos. Os dados de teste são inseridos automaticamente pelo Flyway na inicialização da aplicação.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "12345678"
 	},
 	"item": [
 		{
-			"name": "Initial Setup",
+			"name": "Configuração Inicial",
 			"item": [
 				{
-					"name": "Admin - Reset Data",
+					"name": "Admin - Resetar Dados",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});"
 								],
@@ -38,9 +38,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/admin/reset",
+							"raw": "{{url_base}}/admin/reset",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"admin",
@@ -51,27 +51,27 @@
 					"response": []
 				}
 			],
-			"description": "Requests to configure the test environment. Note: Test data is automatically inserted by Flyway."
+			"description": "Requisições para configurar o ambiente de testes. Nota: Os dados de teste são inseridos automaticamente pelo Flyway."
 		},
 		{
-			"name": "Story 1 & 2 - Basic Appointments",
+			"name": "História 1 e 2 - Agendamentos Básicos",
 			"item": [
 				{
-					"name": "Suggest Appointment - Valid Request",
+					"name": "Sugerir Agendamento - Requisição Válida",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
 									"if (pm.response.code === 200) {",
 									"    var jsonData = pm.response.json();",
-									"    pm.collectionVariables.set(\"unit_id\", jsonData.unidadeId);",
-									"    pm.collectionVariables.set(\"professional_id\", jsonData.profissionalId);",
-									"    pm.collectionVariables.set(\"date_time\", jsonData.dataHora);",
+									"    pm.collectionVariables.set(\"id_unidade\", jsonData.unidadeId);",
+									"    pm.collectionVariables.set(\"id_profissional\", jsonData.profissionalId);",
+									"    pm.collectionVariables.set(\"data_hora\", jsonData.dataHora);",
 									"}"
 								],
 								"type": "text/javascript"
@@ -88,7 +88,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"persistent headache and dizziness\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3\n}",
+							"raw": "{\n  \"pacienteId\": \"p1\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"sintomas\": \"dor de cabeça persistente e tontura\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -96,9 +96,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agendamentos/sugerir",
+							"raw": "{{url_base}}/api/agendamentos/sugerir",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -110,13 +110,13 @@
 					"response": []
 				},
 				{
-					"name": "Reject Suggestion - Request Next",
+					"name": "Recusar Sugestão - Solicitar Próxima",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});"
 								],
@@ -134,7 +134,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"{{unit_id}}\",\n  \"dataHora\": \"{{date_time}}\",\n  \"profissionalId\": \"{{professional_id}}\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3,\n  \"motivoRecusa\": \"Inconvenient time slot\"\n}",
+							"raw": "{\n  \"pacienteId\": \"p1\",\n  \"unidadeId\": \"{{id_unidade}}\",\n  \"dataHora\": \"{{data_hora}}\",\n  \"profissionalId\": \"{{id_profissional}}\",\n  \"tipo\": \"CLINICO_GERAL\",\n  \"localizacao\": \"Centro\",\n  \"urgencia\": 3,\n  \"motivoRecusa\": \"Horário inconveniente\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -142,9 +142,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agendamentos/recusar",
+							"raw": "{{url_base}}/api/agendamentos/recusar",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -156,19 +156,19 @@
 					"response": []
 				},
 				{
-					"name": "Confirm Appointment - Valid",
+					"name": "Confirmar Agendamento - Válido",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
+									"pm.test(\"Código de status é 201\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
 									"if (pm.response.code === 201) {",
 									"    var jsonData = pm.response.json();",
-									"    pm.collectionVariables.set(\"appointment_id\", jsonData.id);",
+									"    pm.collectionVariables.set(\"id_agendamento\", jsonData.id);",
 									"}"
 								],
 								"type": "text/javascript"
@@ -193,9 +193,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agendamentos/confirmar",
+							"raw": "{{url_base}}/api/agendamentos/confirmar",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -207,13 +207,13 @@
 					"response": []
 				},
 				{
-					"name": "Confirm Appointment - Conflict (Same Time)",
+					"name": "Confirmar Agendamento - Conflito (Mesmo Horário)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 409\", function () {",
+									"pm.test(\"Código de status é 409\", function () {",
 									"    pm.response.to.have.status(409);",
 									"});"
 								],
@@ -239,9 +239,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agendamentos/confirmar",
+							"raw": "{{url_base}}/api/agendamentos/confirmar",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -253,13 +253,13 @@
 					"response": []
 				},
 				{
-					"name": "Suggest Appointment - Missing Patient ID (Validation)",
+					"name": "Sugerir Agendamento - ID do Paciente Ausente (Validação)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 400\", function () {",
+									"pm.test(\"Código de status é 400\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});"
 								],
@@ -285,9 +285,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agendamentos/sugerir",
+							"raw": "{{url_base}}/api/agendamentos/sugerir",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -301,16 +301,16 @@
 			]
 		},
 		{
-			"name": "Story 3 - View Schedule by Unit and Specialty",
+			"name": "História 3 - Visualizar Agenda por Unidade e Especialidade",
 			"item": [
 				{
-					"name": "View Schedule - General Practice",
+					"name": "Visualizar Agenda - Clínico Geral",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});"
 								],
@@ -336,9 +336,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agenda/visualizar",
+							"raw": "{{url_base}}/api/agenda/visualizar",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -350,13 +350,13 @@
 					"response": []
 				},
 				{
-					"name": "View Schedule - Blood Test",
+					"name": "Visualizar Agenda - Exame de Sangue",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});"
 								],
@@ -382,9 +382,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agenda/visualizar",
+							"raw": "{{url_base}}/api/agenda/visualizar",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -396,13 +396,13 @@
 					"response": []
 				},
 				{
-					"name": "Create Block - Professional on Vacation",
+					"name": "Criar Bloqueio - Profissional de Férias",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});"
 								],
@@ -420,7 +420,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-19T09:00:00\",\n  \"profissionalId\": \"prof2\",\n  \"motivo\": \"Professional on vacation\"\n}",
+							"raw": "{\n  \"unidadeId\": \"u1\",\n  \"dataHora\": \"2025-09-19T09:00:00\",\n  \"profissionalId\": \"prof2\",\n  \"motivo\": \"Profissional de férias\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -428,9 +428,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agenda/bloquear",
+							"raw": "{{url_base}}/api/agenda/bloquear",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -444,24 +444,24 @@
 			]
 		},
 		{
-			"name": "Tests with Triage",
+			"name": "Exames com Triagem",
 			"item": [
 				{
-					"name": "Suggest Test with Triage - Urgent",
+					"name": "Sugerir Exame com Triagem - Urgente",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
 									"if (pm.response.code === 200) {",
 									"    var jsonData = pm.response.json();",
-									"    pm.collectionVariables.set(\"exam_unit_id\", jsonData.unidadeId);",
-									"    pm.collectionVariables.set(\"exam_professional_id\", jsonData.profissionalId);",
-									"    pm.collectionVariables.set(\"exam_date_time\", jsonData.dataHora);",
+									"    pm.collectionVariables.set(\"id_unidade_exame\", jsonData.unidadeId);",
+									"    pm.collectionVariables.set(\"id_profissional_exame\", jsonData.profissionalId);",
+									"    pm.collectionVariables.set(\"data_hora_exame\", jsonData.dataHora);",
 									"}"
 								],
 								"type": "text/javascript"
@@ -478,7 +478,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"requisicao\": {\n    \"pacienteId\": \"p4\",\n    \"tipo\": \"EXAME_SANGUE\",\n    \"sintomas\": \"severe bleeding and weakness\",\n    \"localizacao\": \"Centro\",\n    \"urgencia\": 5\n  },\n  \"triagem\": {\n    \"pacienteId\": \"p4\",\n    \"sintomas\": \"severe bleeding and weakness\",\n    \"urgencia\": 5,\n    \"motivo\": \"urgent case\"\n  }\n}",
+							"raw": "{\n  \"requisicao\": {\n    \"pacienteId\": \"p4\",\n    \"tipo\": \"EXAME_SANGUE\",\n    \"sintomas\": \"sangramento severo e fraqueza\",\n    \"localizacao\": \"Centro\",\n    \"urgencia\": 5\n  },\n  \"triagem\": {\n    \"pacienteId\": \"p4\",\n    \"sintomas\": \"sangramento severo e fraqueza\",\n    \"urgencia\": 5,\n    \"motivo\": \"caso urgente\"\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -486,9 +486,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agendamentos/sugerir-com-triagem",
+							"raw": "{{url_base}}/api/agendamentos/sugerir-com-triagem",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -500,13 +500,13 @@
 					"response": []
 				},
 				{
-					"name": "Suggest Pre-operative Test",
+					"name": "Sugerir Exame Pré-Operatório",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});"
 								],
@@ -524,7 +524,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"requisicao\": {\n    \"pacienteId\": \"p5\",\n    \"tipo\": \"EXAME_SANGUE\",\n    \"sintomas\": \"pre-operative cardiac surgery\",\n    \"localizacao\": \"Zona Sul\",\n    \"urgencia\": 4\n  },\n  \"triagem\": {\n    \"pacienteId\": \"p5\",\n    \"sintomas\": \"pre-operative cardiac surgery\",\n    \"urgencia\": 4,\n    \"motivo\": \"pre-operative\"\n  }\n}",
+							"raw": "{\n  \"requisicao\": {\n    \"pacienteId\": \"p5\",\n    \"tipo\": \"EXAME_SANGUE\",\n    \"sintomas\": \"cirurgia cardíaca pré-operatório\",\n    \"localizacao\": \"Zona Sul\",\n    \"urgencia\": 4\n  },\n  \"triagem\": {\n    \"pacienteId\": \"p5\",\n    \"sintomas\": \"cirurgia cardíaca pré-operatório\",\n    \"urgencia\": 4,\n    \"motivo\": \"pré-operatório\"\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -532,9 +532,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agendamentos/sugerir-com-triagem",
+							"raw": "{{url_base}}/api/agendamentos/sugerir-com-triagem",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -548,16 +548,16 @@
 			]
 		},
 		{
-			"name": "Patient Consultation History",
+			"name": "Histórico de Consultas do Paciente",
 			"item": [
 				{
-					"name": "Get Active Appointments by Patient",
+					"name": "Obter Agendamentos Ativos por Paciente",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});"
 								],
@@ -569,9 +569,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/consultas/paciente/p1/agendamentos",
+							"raw": "{{url_base}}/api/consultas/paciente/p1/agendamentos",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -585,13 +585,13 @@
 					"response": []
 				},
 				{
-					"name": "Get Patient Medical History",
+					"name": "Obter Histórico Médico do Paciente",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});"
 								],
@@ -603,9 +603,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/consultas/paciente/p1/historico",
+							"raw": "{{url_base}}/api/consultas/paciente/p1/historico",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -621,16 +621,16 @@
 			]
 		},
 		{
-			"name": "Appointment Management",
+			"name": "Gerenciamento de Agendamentos",
 			"item": [
 				{
-					"name": "Cancel Appointment",
+					"name": "Cancelar Agendamento",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});"
 								],
@@ -648,7 +648,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"agendamentoId\": \"{{appointment_id}}\",\n  \"motivo\": \"Patient requested cancellation\"\n}",
+							"raw": "{\n  \"agendamentoId\": \"{{id_agendamento}}\",\n  \"motivo\": \"Paciente solicitou cancelamento\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -656,9 +656,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agendamentos/cancelar",
+							"raw": "{{url_base}}/api/agendamentos/cancelar",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -670,13 +670,13 @@
 					"response": []
 				},
 				{
-					"name": "Reschedule Appointment",
+					"name": "Reagendar Consulta",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Código de status é 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});"
 								],
@@ -694,7 +694,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"agendamentoId\": \"{{appointment_id}}\",\n  \"novaDataHora\": \"2025-09-20T14:00:00\",\n  \"motivo\": \"Schedule conflict resolved\"\n}",
+							"raw": "{\n  \"agendamentoId\": \"{{id_agendamento}}\",\n  \"novaDataHora\": \"2025-09-20T14:00:00\",\n  \"motivo\": \"Conflito de horário resolvido\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -702,9 +702,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/agendamentos/reagendar",
+							"raw": "{{url_base}}/api/agendamentos/reagendar",
 							"host": [
-								"{{base_url}}"
+								"{{url_base}}"
 							],
 							"path": [
 								"api",
@@ -740,47 +740,47 @@
 	],
 	"variable": [
 		{
-			"key": "base_url",
+			"key": "url_base",
 			"value": "http://localhost:8080",
 			"type": "string"
 		},
 		{
-			"key": "unit_id",
+			"key": "id_unidade",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"key": "professional_id",
+			"key": "id_profissional",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"key": "date_time",
+			"key": "data_hora",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"key": "appointment_id",
+			"key": "id_agendamento",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"key": "exam_unit_id",
+			"key": "id_unidade_exame",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"key": "exam_professional_id",
+			"key": "id_profissional_exame",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"key": "exam_date_time",
+			"key": "data_hora_exame",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"key": "exam_id",
+			"key": "id_exame",
 			"value": "",
 			"type": "string"
 		}
